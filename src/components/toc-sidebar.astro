@@ -7,9 +7,10 @@ import { cn, getHeadingMargin } from '@/lib/utils'
 type Props = {
   sections: TOCSection[]
   currentPostId: string
+  title?: string
 }
 
-const { sections, currentPostId } = Astro.props
+const { sections, currentPostId, title = 'Table of Contents' } = Astro.props
 const isCurrentSubpost = isSubpost(currentPostId)
 const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
 ---
@@ -27,7 +28,7 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
         data-toc-scroll-area
       >
         <div class="flex flex-col gap-2 px-4">
-          <span class="text-lg font-medium">Table of Contents</span>
+          <span class="text-lg font-medium">{title}</span>
           {sections.map((section, index) => {
             const isFirstSubpost =
               section.type === 'subpost' &&
@@ -164,7 +165,8 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
       this.regions = []
       const tocContainer = document.getElementById('toc-sidebar-container')
       this.scrollArea =
-        tocContainer?.querySelector('[data-radix-scroll-area-viewport]') || null
+        tocContainer?.querySelector('[data-slot="scroll-area-viewport"]') ||
+        null
       this.tocScrollArea =
         tocContainer?.querySelector('[data-toc-scroll-area]') || null
     }
