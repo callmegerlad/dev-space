@@ -228,7 +228,8 @@ Common fields include:
 | `profileImage`               | `string.url()` or `string.startsWith('/')` | Optional |
 | `profileInfoItems`           | `array` of `{ icon, label, value, href? }` | Optional |
 | `featuredSelectionMode`      | `'latest' \| 'manual'`                    | Optional |
-| `featuredNoteId`             | `string`                                   | Optional |
+| `featuredContentType`        | `'note' \| 'project'`                     | Optional |
+| `featuredContentId`          | `string`                                   | Optional |
 
 See `src/content/pages/index.mdx` and `src/content/pages/about.mdx` for concrete examples.
 

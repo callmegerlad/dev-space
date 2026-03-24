@@ -2,10 +2,11 @@
 import BlogCard from '@/components/blog-card.astro'
 import Link from '@/components/link.astro'
 import PageHead from '@/components/page-head.astro'
+import ProjectCard from '@/components/project-card.astro'
 import { buttonVariants } from '@/components/ui/button'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/layout.astro'
-import { getAllNotes, getRecentNotes } from '@/lib/data-utils'
+import { getAllTaggedContent } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 import { getEntry } from 'astro:content'
@@ -25,16 +26,32 @@ const {
   heroLocation = 'Singaporean',
   featuredSectionTitle = 'Latest notes',
   featuredSelectionMode = 'latest',
-  featuredNoteId = '',
+  featuredContentType,
+  featuredContentId,
 } = indexContentEntry?.data ?? {}
 
-let notes = await getRecentNotes(SITE.featuredPostCount)
+const allTaggedContent = await getAllTaggedContent()
+let featuredItems = allTaggedContent.slice(0, SITE.featuredPostCount)
 
-if (featuredSelectionMode === 'manual' && featuredNoteId) {
-  const allNotes = await getAllNotes()
-  const selectedNote = allNotes.find((post) => post.id === featuredNoteId)
-  if (selectedNote) {
-    notes = [selectedNote]
+if (featuredSelectionMode === 'manual') {
+  const manualId = featuredContentId
+  if (manualId) {
+    const selectedItem = allTaggedContent.find((item) => {
+      const matchesId = item.entry.id === manualId
+
+      if (!matchesId) return false
+      if (!featuredContentType) return true
+
+      const isNote = featuredContentType === 'note' && item.type === 'blog'
+      const isProject =
+        featuredContentType === 'project' && item.type === 'project'
+
+      return isNote || isProject
+    })
+
+    if (selectedItem) {
+      featuredItems = [selectedItem]
+    }
   }
 }
 ---
@@ -128,9 +145,13 @@ if (featuredSelectionMode === 'manual' && featuredNoteId) {
     <h2 class="text-2xl font-medium">{featuredSectionTitle}</h2>
     <ul class="flex flex-col gap-y-4">
       {
-        notes.map((post) => (
+        featuredItems.map((item) => (
           <li>
-            <BlogCard entry={post} />
+            {item.type === 'blog' ? (
+              <BlogCard entry={item.entry} />
+            ) : (
+              <ProjectCard project={item.entry} />
+            )}
           </li>
         ))
       }

@@ -81,7 +81,8 @@ const pages = defineCollection({
     heroLocation: z.string().optional(),
     featuredSectionTitle: z.string().optional(),
     featuredSelectionMode: z.enum(['latest', 'manual']).optional(),
-    featuredNoteId: z.string().optional(),
+    featuredContentType: z.enum(['note', 'project']).optional(),
+    featuredContentId: z.string().optional(),
   }),
 })
 
