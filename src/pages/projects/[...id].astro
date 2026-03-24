@@ -1,0 +1,191 @@
+---
+import Breadcrumbs from '@/components/breadcrumbs.astro'
+import Link from '@/components/link.astro'
+import { badgeVariants } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
+import PageHead from '@/components/page-head.astro'
+import TOCHeader from '@/components/toc-header.astro'
+import { cn, formatDate } from '@/lib/utils'
+import Layout from '@/layouts/layout.astro'
+import { getAdjacentProjects, getAllProjects } from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
+import { render } from 'astro:content'
+
+export async function getStaticPaths() {
+  const projects = await getAllProjects()
+  return projects.map((project) => ({
+    params: { id: project.id },
+    props: project,
+  }))
+}
+
+const project = Astro.props
+const currentProjectId = Astro.params.id
+const { Content, headings } = await render(project)
+const navigation = await getAdjacentProjects(currentProjectId)
+---
+
+<Layout>
+  <PageHead
+    slot="head"
+    title={project.data.name}
+    description={project.data.description}
+  />
+  {headings?.length > 0 && <TOCHeader slot="table-of-contents" headings={headings} />}
+
+  <section
+    class="grid grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-md)-2rem),100%)_minmax(0px,1fr)] gap-y-6"
+  >
+    <div class="col-start-2">
+      <Breadcrumbs
+        items={[
+          { href: '/projects', label: 'Projects', icon: 'lucide:folder-kanban' },
+          {
+            href: `/projects/${currentProjectId}`,
+            label: project.data.name,
+            icon: 'lucide:folder-open',
+          },
+        ]}
+      />
+    </div>
+
+    {
+      project.data.image && (
+        <Image
+          src={project.data.image}
+          alt={project.data.name}
+          width={1200}
+          height={630}
+          class="col-start-2 w-full object-cover"
+        />
+      )
+    }
+
+    <header class="col-start-2 flex flex-col gap-y-4 text-center mb-8">
+      <h1 class="text-3xl leading-tight font-medium sm:text-4xl" id="project-title">
+        {project.data.name}
+      </h1>
+
+      <p class="text-muted-foreground mx-auto max-w-2xl text-sm sm:text-base">
+        {project.data.description}
+      </p>
+
+      {
+        project.data.startDate && (
+          <div class="text-muted-foreground/80 flex items-center justify-center gap-x-2 text-sm">
+            <Icon name="lucide:calendar" class="size-4" />
+            <span>
+              {formatDate(project.data.startDate)}
+              {project.data.endDate
+                ? ` - ${formatDate(project.data.endDate)}`
+                : ' - Present'}
+            </span>
+          </div>
+        )
+      }
+
+      <div class="flex justify-center">
+        <Link
+          href={project.data.link}
+          external
+          class={cn(buttonVariants({ variant: 'outline' }), 'group')}
+        >
+          View source code
+          <Icon
+            name="lucide:arrow-up-right"
+            class="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          />
+        </Link>
+      </div>
+      <div class="flex flex-wrap justify-center gap-2">
+      {
+        project.data.tags &&
+        project.data.tags.length > 0 && (
+            project.data.tags.map((tag) => (
+              <Link
+                href={`/tags/${tag}`}
+                class={badgeVariants({ variant: 'muted' })}
+              >
+                <Icon name="lucide:tag" class="size-3" />
+                {tag}
+              </Link>
+            ))
+        )
+      }
+      </div>
+    </header>
+
+    {
+      headings.length > 0 && (
+        <aside class="sticky top-20 col-start-1 row-span-3 mr-8 ml-auto hidden h-fit max-h-[calc(100vh-6rem)] w-56 self-start overflow-auto xl:block">
+          <div class="space-y-2 px-4">
+            <p class="text-lg font-medium">On This Project</p>
+            <ul class="space-y-2">
+              {
+                headings.map((heading) => (
+                  <li class={cn('text-foreground/60 text-sm', heading.depth === 3 && 'ml-3', heading.depth >= 4 && 'ml-6')}>
+                    <a
+                      href={`#${heading.slug}`}
+                      class="hover:text-foreground underline decoration-transparent underline-offset-[3px] transition-colors hover:decoration-inherit"
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </aside>
+      )
+    }
+
+    <article class="prose col-start-2 max-w-none">
+      <Content />
+    </article>
+
+    <nav class="col-start-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <Link
+        href={navigation.older ? `/projects/${navigation.older.id}#project-title` : '#'}
+        class={cn(
+          buttonVariants({ variant: 'outline' }),
+          'group flex size-full items-center justify-start rounded-lg',
+          !navigation.older && 'pointer-events-none cursor-not-allowed opacity-50',
+        )}
+        aria-disabled={!navigation.older}
+      >
+        <Icon
+          name="lucide:arrow-left"
+          class="mr-2 size-4 transition-transform group-hover:-translate-x-1"
+        />
+        <div class="flex flex-col items-start overflow-hidden text-wrap">
+          <span class="text-muted-foreground text-left text-xs">Previous Project</span>
+          <span class="w-full text-left text-sm text-balance text-ellipsis">
+            {navigation.older?.data.name || "You're at the oldest project!"}
+          </span>
+        </div>
+      </Link>
+
+      <Link
+        href={navigation.newer ? `/projects/${navigation.newer.id}#project-title` : '#'}
+        class={cn(
+          buttonVariants({ variant: 'outline' }),
+          'group flex size-full items-center justify-end rounded-lg',
+          !navigation.newer && 'pointer-events-none cursor-not-allowed opacity-50',
+        )}
+        aria-disabled={!navigation.newer}
+      >
+        <div class="flex flex-col items-end overflow-hidden text-wrap">
+          <span class="text-muted-foreground text-right text-xs">Next Project</span>
+          <span class="w-full text-right text-sm text-balance text-ellipsis">
+            {navigation.newer?.data.name || "You're at the newest project!"}
+          </span>
+        </div>
+        <Icon
+          name="lucide:arrow-right"
+          class="ml-2 size-4 transition-transform group-hover:translate-x-1"
+        />
+      </Link>
+    </nav>
+  </section>
+</Layout>

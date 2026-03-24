@@ -1,0 +1,136 @@
+---
+import Link from '@/components/link.astro'
+import SearchModal from '@/components/search-modal.astro'
+import ThemeToggle from '@/components/theme-toggle.astro'
+import { NAV_LINKS } from '@/consts'
+import { Icon } from 'astro-icon/components'
+---
+
+<div data-pagefind-ignore class="relative">
+  <div class="mx-auto flex max-w-3xl items-center justify-between gap-2 px-3 py-3 sm:px-4">
+    <Link
+      href="/"
+      class="flex shrink-0 items-center justify-center gap-3 select-none transition-all hover:shadow-md"
+    >
+      <span class="font-anton bg-accent text-accent-foreground rounded px-2 py-0.5 tracking-wide text-lg">GERALDKJK</span>
+    </Link>
+
+    <div class="flex items-center gap-4">
+      <nav class="hidden items-center text-sm md:flex gap-4">
+        {
+          NAV_LINKS.map((item) => (
+            <Link
+              href={item.href}
+              class="text-foreground/60 hover:text-foreground active:text-foreground hover:bg-foreground/10 active:bg-foreground/10 px-2 py-1 rounded-full uppercase transition-colors"
+            >
+              {item.label}
+            </Link>
+          ))
+        }
+      </nav>
+
+      <SearchModal />
+      <ThemeToggle transition:persist />
+
+      <details class="group relative md:hidden" data-mobile-nav>
+        <summary
+          class="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors"
+          aria-label="Toggle navigation menu"
+        >
+          <span class="relative size-4">
+            <Icon
+              name="lucide:menu"
+              class="absolute inset-0 size-4 transition-all duration-200 ease-out group-open:rotate-90 group-open:scale-75 group-open:opacity-0"
+            />
+            <Icon
+              name="lucide:x"
+              class="absolute inset-0 size-4 -rotate-90 scale-75 opacity-0 transition-all duration-200 ease-out group-open:rotate-0 group-open:scale-100 group-open:opacity-100"
+            />
+          </span>
+        </summary>
+
+        <div
+          data-mobile-nav-panel
+          class="bg-background border-border absolute top-full right-0 z-60 mt-2 w-44 origin-top-right rounded-lg border p-1.5 shadow-lg"
+        >
+          <nav class="flex flex-col gap-1 text-sm">
+            {
+              NAV_LINKS.map((item) => (
+                <Link
+                  href={item.href}
+                  class="text-foreground/80 hover:text-foreground hover:bg-muted rounded-md px-2.5 py-1.5 uppercase transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))
+            }
+          </nav>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes mobile-nav-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.97);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  details[open] [data-mobile-nav-panel] {
+    animation: mobile-nav-in 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes mobile-nav-out {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.97);
+    }
+  }
+
+  details.is-closing [data-mobile-nav-panel] {
+    animation: mobile-nav-out 140ms cubic-bezier(0.4, 0, 1, 1);
+  }
+</style>
+
+<script is:inline>
+  const MOBILE_NAV_CLOSE_MS = 140
+
+  const initMobileNavCloseAnimation = () => {
+    const mobileNav = document.querySelector('[data-mobile-nav]')
+    if (!(mobileNav instanceof HTMLDetailsElement)) return
+    if (mobileNav.dataset.closeAnimated === 'true') return
+
+    const summary = mobileNav.querySelector('summary')
+    if (!(summary instanceof HTMLElement)) return
+
+    mobileNav.dataset.closeAnimated = 'true'
+
+    summary.addEventListener('click', (event) => {
+      if (!mobileNav.open || mobileNav.classList.contains('is-closing')) return
+
+      event.preventDefault()
+      mobileNav.classList.add('is-closing')
+
+      window.setTimeout(() => {
+        mobileNav.open = false
+        mobileNav.classList.remove('is-closing')
+      }, MOBILE_NAV_CLOSE_MS)
+    })
+  }
+
+  document.addEventListener('astro:page-load', initMobileNavCloseAnimation)
+  document.addEventListener('astro:after-swap', initMobileNavCloseAnimation)
+</script>

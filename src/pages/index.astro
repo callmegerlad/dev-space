@@ -1,0 +1,150 @@
+---
+import BlogCard from '@/components/blog-card.astro'
+import Link from '@/components/link.astro'
+import PageHead from '@/components/page-head.astro'
+import { buttonVariants } from '@/components/ui/button'
+import { SITE } from '@/consts'
+import Layout from '@/layouts/layout.astro'
+import { getAllNotes, getRecentNotes } from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
+import { getEntry } from 'astro:content'
+
+const indexContentEntry = await getEntry('pages', 'index')
+
+const {
+  pageTitle = 'Home',
+  heroEyebrow = 'Dev Space · Notes & Projects',
+  heroTitle = 'Documenting what I learn,',
+  heroTitleAccent = 'and sharing what I build',
+  heroSubtitle =
+    "Welcome to my learning and builder logging space. You'll find practical software engineering notes, project breakdowns, and implementation details from the various systems and products I work on.",
+  heroImage = '/static/me.jpg',
+  heroImageAlt = 'Portrait of Gerald Koh',
+  heroName = 'Gerald Koh',
+  heroLocation = 'Singaporean',
+  featuredSectionTitle = 'Latest notes',
+  featuredSelectionMode = 'latest',
+  featuredNoteId = '',
+} = indexContentEntry?.data ?? {}
+
+let notes = await getRecentNotes(SITE.featuredPostCount)
+
+if (featuredSelectionMode === 'manual' && featuredNoteId) {
+  const allNotes = await getAllNotes()
+  const selectedNote = allNotes.find((post) => post.id === featuredNoteId)
+  if (selectedNote) {
+    notes = [selectedNote]
+  }
+}
+---
+
+<Layout class="flex max-w-3xl flex-col gap-12">
+  <PageHead slot="head" title={pageTitle} />
+  <section data-pagefind-ignore class="bg-card relative overflow-hidden rounded-2xl border">
+    <div
+      class="from-accent/10 to-accent/0 absolute inset-x-0 top-0 h-24 bg-linear-to-b"
+    >
+    </div>
+    <div class="relative px-6 pt-6 sm:px-8 sm:pt-8">
+      <div>
+        <Icon name="lucide:wrench" class="mr-1 inline-block size-3" />
+        <span
+          class="text-muted-foreground text-xs font-semibold tracking-[0.14em] uppercase"
+        >
+          {heroEyebrow}
+        </span>
+      </div>
+    </div>
+    <div
+      class="relative grid gap-8 px-6 pb-6 sm:px-8 sm:pb-8 md:grid-cols-[1.2fr_0.8fr] md:items-stretch"
+    >
+      <div class="space-y-6">
+        <div class="space-y-3">
+          <h1 class="text-3xl leading-tight font-semibold sm:text-4xl">
+            {heroTitle}
+            <span class="text-accent">{heroTitleAccent}</span>.
+          </h1>
+          <p class="text-muted-foreground max-w-xl text-sm sm:text-lg">
+            {heroSubtitle}
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <Link
+            href="/notes"
+            class={buttonVariants({ variant: 'accent' }) + ' group'}
+          >
+            View My Notes
+            <Icon
+              name="lucide:arrow-right"
+              class="ml-1.5 size-4 transition-transform group-hover:translate-x-1"
+            />
+          </Link>
+
+          <Link href="/projects" class={buttonVariants({ variant: 'outline' })}>
+            Explore My Projects
+          </Link>
+
+          <!-- <Link
+            href="https://www.geraldkjk.com"
+            class={buttonVariants({ variant: 'ghost' }) + ' group'}
+            external
+          >
+            Check Out My Website
+            <Icon
+              name="lucide:external-link"
+              class="ml-1.5 size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </Link> -->
+        </div>
+      </div>
+
+      <div class="w-full md:h-full">
+        <Link
+          href="/about"
+          aria-label="Go to About page"
+          class="group/polaroid bg-background/70 ring-accent/30 flex h-full flex-col rounded-lg border p-2 shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:rotate-1 active:translate-y-0 active:scale-[0.995] focus-visible:ring-2 focus-visible:ring-offset-2"
+        >
+          <div class="aspect-4/5 w-full overflow-hidden rounded-md md:h-full md:aspect-auto">
+            <Image
+              src={heroImage}
+              alt={heroImageAlt}
+              width={800}
+              height={1000}
+              class={'h-full w-full object-cover transition-transform duration-500 ease-out group-hover/polaroid:scale-[1.03] group-active/polaroid:scale-[0.99]'}
+              loading={'eager'}
+            />
+          </div>
+          <div class="mt-2 flex items-center justify-between px-1 pb-1">
+            <p class="text-foreground text-sm font-medium">{heroName}</p>
+            <p class="text-muted-foreground text-sm">{heroLocation}</p>
+          </div>
+        </Link>
+      </div>
+    </div>
+  </section>
+  <section data-pagefind-ignore class="flex flex-col gap-y-4">
+    <h2 class="text-2xl font-medium">{featuredSectionTitle}</h2>
+    <ul class="flex flex-col gap-y-4">
+      {
+        notes.map((post) => (
+          <li>
+            <BlogCard entry={post} />
+          </li>
+        ))
+      }
+    </ul>
+    <div class="flex justify-center">
+      <Link
+        href="/notes"
+        class={buttonVariants({ variant: 'ghost' }) + ' group'}
+      >
+        See all notes <span
+          class="ml-1.5 transition-transform group-hover:translate-x-1"
+          >&rarr;</span
+        >
+      </Link>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,209 @@
+---
+import Breadcrumbs from '@/components/breadcrumbs.astro'
+import Link from '@/components/link.astro'
+import PageHead from '@/components/page-head.astro'
+import { SITE, SOCIAL_LINKS } from '@/consts'
+import Layout from '@/layouts/layout.astro'
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
+import { getEntry, render } from 'astro:content'
+
+const aboutContentEntry = await getEntry('pages', 'about')
+
+if (!aboutContentEntry) {
+  throw new Error('Missing content entry: pages/about')
+}
+
+const { Content } = await render(aboutContentEntry)
+
+const {
+  pageTitle = 'About',
+  eyebrow = 'About Me',
+  headline = 'Practical learner and maker.',
+  subtitle = 'Sophomore @ NTU focusing on full-stack software engineering, practical problem-solving, and thoughtful product building.',
+  name = SITE.title,
+  handle = '',
+  profileImage = '/static/me.jpg',
+  profileImageAlt = 'Portrait',
+  githubContributionsTitle = 'GitHub Contributions',
+  profileInfoItems = [],
+} = aboutContentEntry.data
+
+const githubProfileUrl =
+  SOCIAL_LINKS.find((link) => link.label.toLowerCase() === 'github')?.href ?? ''
+
+let githubUsername = ''
+try {
+  if (githubProfileUrl) {
+    const parsedGithubUrl = new URL(githubProfileUrl)
+    if (parsedGithubUrl.hostname.includes('github.com')) {
+      githubUsername = parsedGithubUrl.pathname.replace(/^\//, '').split('/')[0] ?? ''
+    }
+  }
+} catch {
+  githubUsername = ''
+}
+
+const contributionChartUrl = githubUsername
+  ? `https://ghchart.rshah.org/${encodeURIComponent(githubUsername)}`
+  : ''
+
+// Person Schema for About page SEO
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.title,
+  url: SITE.href,
+  description: aboutContentEntry.data.description ?? SITE.description,
+}
+---
+
+<Layout class="max-w-5xl">
+  <!-- Person Schema for About page SEO -->
+  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+
+  <PageHead slot="head" title={pageTitle} />
+  <Breadcrumbs items={[{ label: pageTitle, icon: 'lucide:user' }]} />
+
+  <section
+    data-pagefind-ignore
+    class="mb-8 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start"
+  >
+    <aside class="space-y-4 lg:sticky lg:top-24">
+      <div class="bg-background/70 ring-accent/30 flex flex-col rounded-xl border p-4 shadow-sm">
+        <div class="aspect-4/5 w-full overflow-hidden rounded-lg">
+          <Image
+            src={profileImage}
+            alt={profileImageAlt}
+            width={1000}
+            height={1250}
+            class={'h-full w-full object-cover'}
+            loading={'eager'}
+          />
+        </div>
+        <div class="mt-2 px-1">
+          <p class="text-lg font-semibold">{name}</p>
+          {
+            handle && (
+              <Link
+                href={`/authors/${handle}`}
+                class={cn(
+                  'text-accent hover:text-accent/90 font-mono text-sm transition-colors',
+                )}
+                aria-label={`View ${name}'s author page`}
+              >
+                <p class="text-accent font-mono text-sm">
+                  @{handle}
+                </p>
+              </Link>
+            )
+          }
+        </div>
+      </div>
+    </aside>
+
+    <div class="space-y-8">
+      <header class="space-y-3">
+        <p
+          class="text-muted-foreground text-xs font-semibold tracking-[0.14em] uppercase"
+        >
+          {eyebrow}
+        </p>
+        <h1 class="text-3xl font-bold md:text-4xl">{headline}</h1>
+        <p class="text-muted-foreground max-w-2xl text-sm md:text-base">
+          {subtitle}
+        </p>
+      </header>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        {
+          profileInfoItems.map((item) => {
+            const content = (
+              <>
+                <div class="bg-background text-muted-foreground mt-0.5 rounded-md p-1.5">
+                  <Icon name={item.icon} class="size-4" />
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <p class="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                    {item.label}
+                  </p>
+
+                  <div class="flex items-center gap-1">
+                    <p class="text-foreground text-sm break-all">
+                      {item.value}
+                    </p>
+                    {item.href && (
+                      <Icon
+                        name="lucide:external-link"
+                        class="size-3 shrink-0"
+                      />
+                    )}
+                  </div>
+                </div>
+              </>
+            )
+
+            return item.href ? (
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="bg-muted/40 border-border/60 hover:border-accent/50 hover:bg-muted/60 group flex items-start gap-3 rounded-lg border p-3 transition-all"
+              >
+                {content}
+              </a>
+            ) : (
+              <div class="bg-muted/40 border-border/60 flex items-start gap-3 rounded-lg border p-3">
+                {content}
+              </div>
+            )
+          })
+        }
+      </div>
+
+      <div class="space-y-4">
+        <p
+          class="text-muted-foreground text-sm font-medium tracking-wide uppercase"
+        >
+          Bio
+        </p>
+        <div class="prose max-w-none">
+          <Content />
+        </div>
+      </div>
+
+      {
+        contributionChartUrl && (
+          <div class="space-y-4">
+            <p class="text-muted-foreground text-sm font-medium tracking-wide uppercase">
+              {githubContributionsTitle}
+            </p>
+
+            <a
+              href={githubProfileUrl || `https://github.com/${githubUsername}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="bg-card border-border/70 hover:border-accent/50 block rounded-lg border p-4 transition-colors"
+              aria-label={`View ${name}'s GitHub profile`}
+            >
+              <img
+                src={contributionChartUrl}
+                alt={`${name}'s GitHub contribution chart`}
+                loading="lazy"
+                decoding="async"
+                class="w-full"
+              />
+
+              <p class="text-muted-foreground mt-3 inline-flex items-center gap-1.5 text-sm">
+                View full activity on GitHub
+                <Icon name="lucide:external-link" class="size-3.5" />
+              </p>
+            </a>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Layout>
