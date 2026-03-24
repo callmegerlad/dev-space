@@ -334,6 +334,14 @@ export async function getPostReadingTime(postId: string): Promise<string> {
   return readingTime(wordCount)
 }
 
+export async function getProjectReadingTime(projectId: string): Promise<string> {
+  const project = await getProjectById(projectId)
+  if (!project) return readingTime(0)
+
+  const wordCount = calculateWordCountFromHtml(project.body)
+  return readingTime(wordCount)
+}
+
 export type TOCHeading = {
   slug: string
   text: string

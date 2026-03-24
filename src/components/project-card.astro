@@ -1,6 +1,8 @@
 ---
 import Link from '@/components/link.astro'
 import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { getProjectReadingTime } from '@/lib/data-utils'
 import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
@@ -11,6 +13,7 @@ interface Props {
 }
 
 const { project } = Astro.props
+const readTime = await getProjectReadingTime(project.id)
 ---
 
 <div
@@ -41,9 +44,11 @@ const { project } = Astro.props
       <p class="text-muted-foreground mb-2 text-sm">
         {project.data.description}
       </p>
-      {
-        project.data.startDate && (
-          <p class="text-muted-foreground/70 mb-2 flex items-center gap-x-1.5 text-xs">
+      <div
+        class="text-muted-foreground mb-2 flex flex-wrap items-center gap-x-2 text-xs"
+      >
+        {
+          project.data.startDate && (
             <span class="flex items-center gap-x-1.5">
               <Icon name="lucide:calendar" class="size-3" />
               <span>
@@ -53,14 +58,19 @@ const { project } = Astro.props
                   : ' - Present'}
               </span>
             </span>
-          </p>
-        )
-      }
+          )
+        }
+        {project.data.startDate && <Separator orientation="vertical" className="h-4!" />}
+        <span>{readTime}</span>
+      </div>
       {
         project.data.tags && (
           <div class="flex flex-wrap gap-2">
             {project.data.tags.map((tag: string) => (
-              <Badge variant="muted">{tag}</Badge>
+              <Badge variant="muted" className="flex items-center gap-x-1">
+                <Icon name="lucide:hash" class="size-3" />
+                {tag}
+              </Badge>
             ))}
           </div>
         )

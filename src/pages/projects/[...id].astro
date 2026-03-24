@@ -8,7 +8,11 @@ import TOCHeader from '@/components/toc-header.astro'
 import TOCSidebar from '@/components/toc-sidebar.astro'
 import { cn, formatDate } from '@/lib/utils'
 import Layout from '@/layouts/layout.astro'
-import { getAdjacentProjects, getAllProjects } from '@/lib/data-utils'
+import {
+  getAdjacentProjects,
+  getAllProjects,
+  getProjectReadingTime,
+} from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 import { render } from 'astro:content'
@@ -25,6 +29,7 @@ const project = Astro.props
 const currentProjectId = Astro.params.id
 const { Content, headings } = await render(project)
 const navigation = await getAdjacentProjects(currentProjectId)
+const projectReadingTime = await getProjectReadingTime(currentProjectId)
 const tocSections =
   headings?.length > 0
     ? [
@@ -86,19 +91,26 @@ const tocSections =
         {project.data.description}
       </p>
 
-      {
-        project.data.startDate && (
-          <div class="text-muted-foreground/80 flex items-center justify-center gap-x-2 text-sm">
-            <Icon name="lucide:calendar" class="size-4" />
-            <span>
-              {formatDate(project.data.startDate)}
-              {project.data.endDate
-                ? ` - ${formatDate(project.data.endDate)}`
-                : ' - Present'}
-            </span>
-          </div>
-        )
-      }
+      <div
+        class="text-muted-foreground divide-border mx-auto flex flex-col items-center justify-center divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm"
+      >
+        {
+          project.data.startDate && (
+            <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+              <Icon name="lucide:calendar" class="size-3" />
+              <span>
+                {formatDate(project.data.startDate)}
+                {project.data.endDate
+                  ? ` - ${formatDate(project.data.endDate)}`
+                  : ' - Present'}
+              </span>
+            </div>
+          )
+        }
+        <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+          <span>{projectReadingTime}</span>
+        </div>
+      </div>
 
       <div class="flex justify-center">
         <Link
