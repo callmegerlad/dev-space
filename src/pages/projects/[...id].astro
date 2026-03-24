@@ -5,6 +5,7 @@ import { badgeVariants } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import PageHead from '@/components/page-head.astro'
 import TOCHeader from '@/components/toc-header.astro'
+import TOCSidebar from '@/components/toc-sidebar.astro'
 import { cn, formatDate } from '@/lib/utils'
 import Layout from '@/layouts/layout.astro'
 import { getAdjacentProjects, getAllProjects } from '@/lib/data-utils'
@@ -24,6 +25,20 @@ const project = Astro.props
 const currentProjectId = Astro.params.id
 const { Content, headings } = await render(project)
 const navigation = await getAdjacentProjects(currentProjectId)
+const tocSections =
+  headings?.length > 0
+    ? [
+        {
+          type: 'parent' as const,
+          title: 'On This Project',
+          headings: headings.map((heading) => ({
+            slug: heading.slug,
+            text: heading.text,
+            depth: heading.depth,
+          })),
+        },
+      ]
+    : []
 ---
 
 <Layout>
@@ -116,29 +131,13 @@ const navigation = await getAdjacentProjects(currentProjectId)
       </div>
     </header>
 
-    {
-      headings.length > 0 && (
-        <aside class="sticky top-20 col-start-1 row-span-3 mr-8 ml-auto hidden h-fit max-h-[calc(100vh-6rem)] w-56 self-start overflow-auto xl:block">
-          <div class="space-y-2 px-4">
-            <p class="text-lg font-medium">On This Project</p>
-            <ul class="space-y-2">
-              {
-                headings.map((heading) => (
-                  <li class={cn('text-foreground/60 text-sm', heading.depth === 3 && 'ml-3', heading.depth >= 4 && 'ml-6')}>
-                    <a
-                      href={`#${heading.slug}`}
-                      class="hover:text-foreground underline decoration-transparent underline-offset-[3px] transition-colors hover:decoration-inherit"
-                    >
-                      {heading.text}
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-        </aside>
-      )
-    }
+    {tocSections.length > 0 && (
+      <TOCSidebar
+        sections={tocSections}
+        currentPostId={currentProjectId}
+        title="On This Project"
+      />
+    )}
 
     <article class="prose col-start-2 max-w-none">
       <Content />
