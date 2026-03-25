@@ -1,0 +1,58 @@
+---
+title: Elastic Beanstalk
+description: Core notes on AWS Elastic Beanstalk concepts, deployment model, managed features, and pricing.
+date: 2026-03-25
+tags:
+  - AWS
+  - ElasticBeanstalk
+  - Compute
+  - Deployment
+image: ""
+authors:
+  - geraldkjk
+order: 4
+---
+import Callout from '@/components/callout.astro'
+
+## What is Elastic Beanstalk?
+AWS Elastic Beanstalk is a managed service for deploying and scaling web applications and services on AWS.
+## Key Notes
+### Deployment model
+Elastic Beanstalk provides a **container-centric** view of deploying an application on AWS.
+#### Key idea
+- You upload your application code, and Elastic Beanstalk handles the deployment and much of the surrounding infrastructure management.
+
+<Callout variant="note">
+Elastic Beanstalk sits in between **fully manual infrastructure management** and more opinionated platform services. It gives you automation, while still letting you configure the underlying AWS resources.
+</Callout>
+
+### Managed service features
+Elastic Beanstalk automates many operational tasks involved in running an application.
+#### Managed for you
+- Capacity provisioning
+- Load balancing
+- Auto Scaling
+- Application health monitoring
+- Instance configuration
+- Deployment orchestration
+#### Your responsibility
+- Your main responsibility is your **application code**
+- You can still customise the environment configuration when needed
+
+<Callout variant="important">
+A common exam point is that Elastic Beanstalk is a **managed service**, but it is **not serverless**. The underlying infrastructure still exists and can still be configured.
+</Callout>
+### Control and flexibility
+Elastic Beanstalk reduces operational overhead without removing control completely.
+- Elastic Beanstalk creates and manages AWS resources on your behalf
+- You still retain visibility and control over the resources in the environment
+- It is useful when you want easier deployment without managing every step manually
+### Pricing
+There is no additional charge for Elastic Beanstalk itself.
+- Elastic Beanstalk is **free as a service**
+- You still pay for the **underlying AWS resources** used by your application
+- These may include resources such as **EC2 instances**, **load balancers**, and **S3 buckets**
+
+<Callout variant="tip">
+For pricing questions, remember: you are **not billed for Elastic Beanstalk directly**, only for the AWS resources it provisions and uses.
+</Callout>
