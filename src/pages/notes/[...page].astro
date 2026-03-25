@@ -3,10 +3,12 @@ import BlogCard from '@/components/blog-card.astro'
 import Breadcrumbs from '@/components/breadcrumbs.astro'
 import PageHead from '@/components/page-head.astro'
 import PaginationComponent from '@/components/ui/pagination'
+import { badgeVariants } from '@/components/ui/badge'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/layout.astro'
 import { getAllNotes, groupPostsByYear } from '@/lib/data-utils'
 import type { PaginateFunction } from 'astro'
+import { Icon } from 'astro-icon/components'
 
 export async function getStaticPaths({
   paginate,
@@ -18,6 +20,7 @@ export async function getStaticPaths({
 }
 
 const { page } = Astro.props
+const notesCount = page.data.length
 
 const postsByYear = groupPostsByYear(page.data)
 const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
@@ -33,6 +36,11 @@ const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
   />
 
   <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
+    <div class="mb-3 flex items-center gap-2 text-sm font-medium">
+      <Icon name="lucide:notebook-text" class="size-4" />
+      Notes
+      <span class={badgeVariants({ variant: 'muted' })}>{notesCount}</span>
+    </div>
     {
       years.map((year) => (
         <section class="flex flex-col gap-y-4">
