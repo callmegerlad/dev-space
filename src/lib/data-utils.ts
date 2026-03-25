@@ -92,8 +92,15 @@ export function groupProjectsByYear(
   )
 }
 
-export async function getAllTaggedContent(): Promise<TaggedContentItem[]> {
-  const [posts, projects] = await Promise.all([getAllPosts(), getAllProjects()])
+export async function getAllTaggedContent(
+  options: { includeSubposts?: boolean } = {},
+): Promise<TaggedContentItem[]> {
+  const { includeSubposts = false } = options
+
+  const [posts, projects] = await Promise.all([
+    includeSubposts ? getAllPostsAndSubposts() : getAllPosts(),
+    getAllProjects(),
+  ])
 
   const blogItems: TaggedContentItem[] = posts.map((post) => ({
     type: 'blog',
@@ -113,7 +120,7 @@ export async function getAllTaggedContent(): Promise<TaggedContentItem[]> {
 }
 
 export async function getAllTags(): Promise<Map<string, number>> {
-  const items = await getAllTaggedContent()
+  const items = await getAllTaggedContent({ includeSubposts: true })
   return items.reduce((acc, item) => {
     const tags =
       item.type === 'blog' ? item.entry.data.tags : item.entry.data.tags
@@ -193,7 +200,7 @@ export async function getPostsByAuthor(
 export async function getPostsByTag(
   tag: string,
 ): Promise<TaggedContentItem[]> {
-  const items = await getAllTaggedContent()
+  const items = await getAllTaggedContent({ includeSubposts: true })
   return items.filter((item) => item.entry.data.tags?.includes(tag))
 }
 
