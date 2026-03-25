@@ -3,7 +3,7 @@ import type { IconMap, SocialLink, Site } from '@/types'
 export const SITE: Site = {
   title: 'Gerald\'s Dev Space',
   description:
-    'My personal development space where I share my projects, notes and learnings.',
+    'My personal development space where I document what I learn, and share what I build!',
   href: 'https://dev.geraldkjk.com',
   author: 'geraldkjk',
   locale: 'en-SG',
