@@ -14,11 +14,14 @@ order: 2
 import Callout from '@/components/callout.astro'
 
 ## What is EBS?
+
 Amazon Elastic Block Store (EBS) is AWS’s block storage service that provides persistent storage volumes for EC2 instances.
 
-## Key Notes
-### EBS volumes
+---
+## EBS volumes
+
 An EBS volume is a network-attached storage device that can be attached to an EC2 instance.
+
 - An EBS volume is bound to a specific Availability Zone (AZ).
 - It can be detached from one instance and attached to another instance within the same AZ.
 - Because it is network-attached storage, it is not physically tied to a single host machine.
@@ -27,9 +30,13 @@ An EBS volume is a network-attached storage device that can be attached to an EC
 <Callout variant="note">
 Think of EBS as **network storage for EC2**, unlike Instance Store, which is physically attached and ephemeral.
 </Callout>
-### Moving EBS volumes across AZs and Regions
+---
+## Moving EBS volumes across AZs and Regions
+
 Because EBS volumes are tied to a single AZ, you cannot directly move a volume across AZs or Regions.
-#### Tutorial: How to move them
+
+### Tutorial: How to move them
+
 - To move an EBS volume to another AZ, you must first create a **snapshot**.
 - Then, create a new volume from that snapshot in the target AZ.
 - Snapshots can also be copied across Regions.
@@ -37,14 +44,17 @@ Because EBS volumes are tied to a single AZ, you cannot directly move a volume a
 <Callout variant="important">
 EBS volumes are AZ-scoped. For exam questions, if you need to move a volume across AZs or Regions, the answer usually involves a **snapshot**.
 </Callout>
+---
+## EBS volume types
 
-### EBS volume types
 EBS provides different volume types for different performance and cost requirements.
-#### SSD volumes
+
+### SSD volumes
 
 - **gp2 / gp3**: General Purpose SSD volumes that balance price and performance for a wide variety of workloads.
 - **io1 / io2**: Highest-performance SSD volumes for mission-critical applications requiring low latency or high throughput. These support **Provisioned IOPS (PIOPS)** and are well-suited for database workloads.
-#### HDD volumes
+
+### HDD volumes
 
 - **st1**: Low-cost HDD volume designed for frequently accessed, throughput-intensive workloads such as big data, data warehouses, and log processing.
 - **sc1**: Lowest-cost HDD volume designed for less frequently accessed workloads.
@@ -52,8 +62,11 @@ EBS provides different volume types for different performance and cost requireme
 <Callout variant="note">
 Only **gp2**, **gp3**, **io1**, and **io2** can be used as **boot volumes**.
 </Callout>
-### EBS Multi-Attach
+---
+## EBS Multi-Attach
+
 EBS Multi-Attach allows the same EBS volume to be attached to multiple EC2 instances at the same time.
+
 - Available only for the **io1** / **io2** volume families.
 - All attached instances must be in the **same AZ**.
 - Each attached instance can have read and write access to the volume.
@@ -62,8 +75,11 @@ EBS Multi-Attach allows the same EBS volume to be attached to multiple EC2 insta
 <Callout variant="important">
 EBS Multi-Attach requires a **cluster-aware file system**. Traditional file systems such as **XFS** or **ext4** are not suitable for this use case.
 </Callout>
-### EBS encryption
+---
+## EBS encryption
+
 EBS encryption protects data at rest and in transit between the EC2 instance and the EBS volume.
+
 - EBS encryption has minimal impact on latency and performance.
 - It is recommended to enable encryption for EBS volumes.
 - Encryption helps protect sensitive data stored on the volume and in snapshots created from it.

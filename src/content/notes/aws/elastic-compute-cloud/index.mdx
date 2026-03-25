@@ -14,36 +14,52 @@ order: 1
 import Callout from '@/components/callout.astro'
 
 ## What is EC2?
-Amazon Elastic Compute Cloud (EC2) is AWS's virtual server offering that lets you launch and manage compute instances in the cloud.
-## Key Notes  
 
-### Elastic Network Interfaces (ENIs)
+Amazon Elastic Compute Cloud (EC2) is AWS's virtual server offering that lets you launch and manage compute instances in the cloud.
+
+---
+## Elastic Network Interfaces (ENIs)
+
 An Elastic Network Interface (ENI) is a virtual network interface attached to an EC2 instance.
+
 - An ENI is tied to a specific Availability Zone (AZ).  
-- An ENI cannot be attached to an EC2 instance in a different AZ.  
-### EC2 Hibernate  
+- An ENI cannot be attached to an EC2 instance in a different AZ.
+
+## EC2 Hibernate
+
 EC2 hibernation allows an instance to preserve its in-memory state and resume later. To enable hibernation:
+
 - the root volume must be an **EBS volume**
 - the root volume must be **encrypted** 
 
 This is required to protect any sensitive data written from memory to disk.
-### EC2 Placement Groups  
+
+---
+## EC2 Placement Groups
+
 Placement groups control how EC2 instances are placed on underlying hardware.
-#### Types
+
+### Types
+
 - **Cluster placement group**: best for **low latency** and **high network throughput** between instances.
 - **Spread placement group**: best for **high availability**, since instances are placed on distinct underlying hardware.
 
 <Callout variant="note">  
 A good way to remember this: **cluster** for performance, **spread** for resilience.  
 </Callout>
-### EC2 Instance Store
+---
+## EC2 Instance Store
+
 EC2 Instance Store provides **physically attached storage** on the host machine.
-#### Characteristics
+
+### Characteristics
+
 - very high I/O performance
 - ideal for temporary data
 - storage is lost if the instance is stopped or terminated (ephemeral)
 - data may also be lost if the underlying hardware fails
-#### Good use cases
+### Good use cases
+
 - buffers
 - caches
 - scratch data
@@ -52,14 +68,22 @@ EC2 Instance Store provides **physically attached storage** on the host machine.
 <Callout variant="important">  
 Instance Store is **ephemeral** storage. Do not use it for data that must persist.  
 </Callout>
-### EC2 Nitro
+---
+## EC2 Nitro
+
 The Nitro System is the underlying platform used by newer generations of EC2 instances.
-#### Benefits  
-- Better networking performance  
-- Higher-speed EBS performance  
+
+### Benefits
+
+- Better networking performance
+- Higher-speed EBS performance
 - Improved security through a more modern virtualisation architecture
-### EC2 Capacity Reservations
+
+---
+## EC2 Capacity Reservations
+
 EC2 Capacity Reservations ensure that you have EC2 capacity available when you need it.
+
 - You can reserve capacity manually or with a planned end date  
 - There is no 1-year or 3-year commitment required  
 - Capacity is available immediately once the reservation starts  
@@ -72,13 +96,21 @@ Capacity Reservations can be combined with **Reserved Instances** or **Savings P
 <Callout variant="important">
 In the exam, note that you can plan in advance for capacity, in case you want to launch instances in an AZ of a specific type around a specific timeframe.
 </Callout>
-### EC2 Instance Metadata
+---
+## EC2 Instance Metadata
+
 EC2 instance metadata provides information about the running instance. The metadata endpoint URL is: `http://169.254.169.254/latest/meta-data/`
+
 - You can retrieve the attached IAM role name from instance metadata  
 - You cannot retrieve the IAM policy document directly from instance metadata
-### Optimising CPU options
+
+---
+## Optimising CPU options
+
 EC2 instances come in a combination of RAM and vCPU, but we may wish to change the following vCPU options, in some cases:
-#### Options
+
+### Options
+
 - **Number of CPU cores**: can be reduced to lower licensing costs when you need high memory but fewer CPUs
 - **Threads per core**: can be set to 1 by disabling multithreading, which may help certain high-performance computing (HPC) workloads
 
