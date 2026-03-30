@@ -1,0 +1,134 @@
+---
+title: ElastiCache
+description: Core notes on Amazon ElastiCache concepts, Redis OSS vs Memcached, security, and common caching patterns.
+date: 2026-03-30
+tags:
+  - AWS
+  - ElastiCache
+  - Caching
+  - Databases
+image: ""
+authors:
+  - geraldkjk
+order: 5
+---
+import Callout from '@/components/callout.astro'
+
+## What is ElastiCache?
+
+Amazon ElastiCache is AWS’s managed in-memory caching service.
+
+It currently supports **Valkey**, **Redis OSS**, and **Memcached**, and can be deployed as either a **serverless cache** or a **node-based cluster**.
+
+- It is used to reduce latency and improve application performance.
+- It helps offload repeated reads from the primary database.
+- It is commonly used for caching, session storage, and other low-latency access patterns.
+
+<Callout variant="note">
+Using ElastiCache can help keep application tiers more **stateless** by moving transient data such as cached results or session state out of individual application servers.
+</Callout>
+
+---
+
+## Application impact
+
+ElastiCache is not something the platform uses automatically for you. Your application usually needs to be designed to make use of it.
+
+- The application must explicitly **read from** and **write to** the cache.
+- This often **involves application code changes**, unless your framework abstracts the caching logic for you.
+- The choice of caching strategy affects consistency, cost, and complexity.
+
+<Callout variant="important">
+In exam questions, ElastiCache improves performance, but it usually **requires the application to be designed to use a cache properly**.
+</Callout>
+
+---
+
+## Redis OSS vs Memcached
+
+Common comparison is between **Redis OSS** and **Memcached**, even though current AWS docs also include **Valkey** as a supported engine.
+
+| Feature                          | Redis OSS                                                                                                                  | Memcached                                                                           |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Use case                         | In-memory data structure store used for caching, session storage, and other low-latency workloads                          | Simple, high-performance, distributed in-memory key-value cache                     |
+| Read replicas                    | ✅ Yes                                                                                                                      | ❌ No                                                                                |
+| Multi-AZ with automatic failover | ✅ Yes                                                                                                                      | ❌ No                                                                                |
+| Backup and restore               | ✅ Yes                                                                                                                      | ✅ ONLY for serverless, NOT node-based clusters                                      |
+| Persistence                      | ✅ Supported                                                                                                                | ❌ Non-persistent                                                                    |
+| Data structures                  | Supports richer data structures                                                                                            | Simpler key-value storage                                                           |
+| Best for                         | Higher availability, richer features, and more advanced workloads, though can scale horizontally with cluster mode enabled | Straightforward caching with simple horizontal scaling without replication overhead |
+
+<Callout variant="important">
+A common exam distinction is this: **Redis OSS** is usually chosen when you need replication, failover, backups, or richer data structures, while **Memcached** is usually chosen for simpler, horizontally scaled caching.
+</Callout>
+
+---
+
+## Useful Redis OSS feature
+
+### Sorted sets
+
+Redis OSS sorted sets are useful when you need both **uniqueness** and **ordering**.
+
+- A common use case is **gaming leaderboards**
+- Sorted sets keep items ranked in order as scores change
+
+<Callout variant="tip">
+If an exam question mentions a **leaderboard**, **ranking**, or **ordered scores**, Redis OSS sorted sets are usually a strong clue.
+</Callout>
+
+---
+
+## Security
+
+Security features differ between engines.
+
+### Valkey / Redis OSS
+
+- Supports **IAM authentication**
+- Supports **Role-Based Access Control (RBAC)**
+- Supports the **AUTH** command for node-based caches
+- Supports **in-transit encryption (TLS)**
+
+### Memcached
+
+- Supports **in-transit encryption (TLS)**
+- TLS for Memcached requires supported engine versions and compatible clients
+
+---
+
+## Common caching patterns
+
+### Cache-aside (lazy loading)
+
+The application checks the cache first.
+
+- If the data is in the cache, return it
+- If not, query the database
+- Then store the result in the cache
+
+#### Key point
+- Easy to implement
+- Can result in **stale data**
+- First request after a cache miss is slower
+
+### Write-through
+
+When data is written to the database, it is also written to the cache immediately.
+
+#### Key point
+- Reduces the chance of stale data
+- Can improve cache hit rates
+- May store data that is rarely used
+
+### Session store
+
+ElastiCache can be used to store temporary session data outside the application server.
+
+#### Key point
+- Helps support more **stateless** application tiers
+- Useful when multiple application servers need shared session state
+
+<Callout variant="note">
+AWS commonly discusses **lazy loading** and **write-through** together. In practice, they are often combined with **TTL** so stale or unused entries eventually expire.
+</Callout>
