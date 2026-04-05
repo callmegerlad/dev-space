@@ -10,6 +10,7 @@ import { getAllTaggedContent } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 import { getEntry } from 'astro:content'
+import heroImage from '@/assets/me.webp'
 
 const indexContentEntry = await getEntry('pages', 'index')
 
@@ -20,7 +21,6 @@ const {
   heroTitleAccent = 'and sharing what I build',
   heroSubtitle =
     "Welcome to my learning and builder logging space. You'll find practical software engineering notes, project breakdowns, and implementation details from the various systems and products I work on.",
-  heroImage = '/static/me.jpg',
   heroImageAlt = 'Portrait of Gerald Koh',
   heroName = 'Gerald Koh',
   heroLocation = 'Singaporean',

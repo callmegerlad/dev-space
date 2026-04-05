@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 import { getEntry, render } from 'astro:content'
+import profileImage from '@/assets/me.webp'
 
 const aboutContentEntry = await getEntry('pages', 'about')
 
@@ -24,7 +25,6 @@ const {
   subtitle = 'Sophomore @ NTU focusing on full-stack software engineering, practical problem-solving, and thoughtful product building.',
   name = SITE.title,
   handle = '',
-  profileImage = '/static/me.jpg',
   profileImageAlt = 'Portrait',
   githubContributionsTitle = 'GitHub Contributions',
   profileInfoItems = [],
