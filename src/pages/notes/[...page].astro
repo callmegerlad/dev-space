@@ -2,8 +2,8 @@
 import BlogCard from '@/components/blog-card.astro'
 import Breadcrumbs from '@/components/breadcrumbs.astro'
 import PageHead from '@/components/page-head.astro'
-import PaginationComponent from '@/components/ui/pagination'
 import { badgeVariants } from '@/components/ui/badge'
+import PaginationComponent from '@/components/ui/pagination'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/layout.astro'
 import { getAllNotes, groupPostsByYear } from '@/lib/data-utils'
@@ -20,7 +20,8 @@ export async function getStaticPaths({
 }
 
 const { page } = Astro.props
-const notesCount = page.data.length
+const allNotes = await getAllNotes()
+const notesCount = allNotes.length
 
 const postsByYear = groupPostsByYear(page.data)
 const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
