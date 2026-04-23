@@ -83,6 +83,10 @@
       @apply text-foreground/80 pl-2 [&>p]:my-0;
     }
 
+    :where(li input[type='checkbox']):not(:where(.not-prose, .not-prose *)) {
+      @apply mr-2 align-middle;
+    }
+
     :where(ul ul, ol ol, ul ol, ol ul):not(:where(.not-prose, .not-prose *)) {
       @apply marker:text-foreground/30 my-2 ml-6;
     }
