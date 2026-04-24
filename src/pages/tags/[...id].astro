@@ -1,5 +1,5 @@
 ---
-import BlogCard from '@/components/blog-card.astro'
+import NoteCard from '@/components/note-card.astro'
 import Breadcrumbs from '@/components/breadcrumbs.astro'
 import PageHead from '@/components/page-head.astro'
 import ProjectCard from '@/components/project-card.astro'
@@ -27,7 +27,7 @@ export async function getStaticPaths() {
 }
 
 const { tag, posts } = Astro.props
-const blogItems = posts.filter((item) => item.type === 'blog')
+const noteItems = posts.filter((item) => item.type === 'note')
 const projectItems = posts.filter((item) => item.type === 'project')
 ---
 
@@ -52,7 +52,7 @@ const projectItems = posts.filter((item) => item.type === 'project')
     </span>
     <span class={badgeVariants({ variant: 'muted' })}>
       <Icon name="lucide:notebook-text" class="size-3" />
-      {blogItems.length} notes
+      {noteItems.length} notes
     </span>
     <span class={badgeVariants({ variant: 'muted' })}>
       <Icon name="lucide:folder-kanban" class="size-3" />
@@ -61,17 +61,17 @@ const projectItems = posts.filter((item) => item.type === 'project')
   </section>
 
   {
-    blogItems.length > 0 && (
+    noteItems.length > 0 && (
       <section data-pagefind-ignore class="mb-8">
         <div class="mb-3 flex items-center gap-2 text-sm font-medium">
           <Icon name="lucide:notebook-text" class="size-4" />
           Notes
-          <span class={badgeVariants({ variant: 'muted' })}>{blogItems.length}</span>
+          <span class={badgeVariants({ variant: 'muted' })}>{noteItems.length}</span>
         </div>
         <ul class="flex flex-col gap-y-4">
-          {blogItems.map((item) => (
+          {noteItems.map((item) => (
             <li>
-              <BlogCard entry={item.entry} />
+              <NoteCard entry={item.entry} />
             </li>
           ))}
         </ul>

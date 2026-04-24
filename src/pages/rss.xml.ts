@@ -13,13 +13,13 @@ export async function GET(context: APIContext) {
       site: context.site ?? SITE.href,
       items: items.map((item) => ({
         title:
-          item.type === 'blog'
+          item.type === 'note'
             ? item.entry.data.title
             : item.entry.data.name,
         description: item.entry.data.description,
         pubDate: item.date,
         link:
-          item.type === 'blog'
+          item.type === 'note'
             ? `/notes/${item.entry.id}/`
             : `/projects/${item.entry.id}/`,
       })),

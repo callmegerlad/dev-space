@@ -1,6 +1,6 @@
 ---
 import AuthorCard from '@/components/author-card.astro'
-import BlogCard from '@/components/blog-card.astro'
+import NoteCard from '@/components/note-card.astro'
 import Breadcrumbs from '@/components/breadcrumbs.astro'
 import PageHead from '@/components/page-head.astro'
 import Layout from '@/layouts/layout.astro'
@@ -44,7 +44,7 @@ const authorPosts = await getPostsByAuthor(author.id)
             .filter((post) => !post.data.draft)
             .map((post) => (
               <li>
-                <BlogCard entry={post} />
+                <NoteCard entry={post} />
               </li>
             ))}
         </ul>

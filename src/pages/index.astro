@@ -1,5 +1,5 @@
 ---
-import BlogCard from '@/components/blog-card.astro'
+import NoteCard from '@/components/note-card.astro'
 import Link from '@/components/link.astro'
 import PageHead from '@/components/page-head.astro'
 import ProjectCard from '@/components/project-card.astro'
@@ -42,7 +42,7 @@ if (featuredSelectionMode === 'manual') {
       if (!matchesId) return false
       if (!featuredContentType) return true
 
-      const isNote = featuredContentType === 'note' && item.type === 'blog'
+      const isNote = featuredContentType === 'note' && item.type === 'note'
       const isProject =
         featuredContentType === 'project' && item.type === 'project'
 
@@ -147,8 +147,8 @@ if (featuredSelectionMode === 'manual') {
       {
         featuredItems.map((item) => (
           <li>
-            {item.type === 'blog' ? (
-              <BlogCard entry={item.entry} />
+            {item.type === 'note' ? (
+              <NoteCard entry={item.entry} />
             ) : (
               <ProjectCard project={item.entry} />
             )}

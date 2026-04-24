@@ -1,5 +1,5 @@
 ---
-import BlogCard from '@/components/blog-card.astro'
+import NoteCard from '@/components/note-card.astro'
 import Breadcrumbs from '@/components/breadcrumbs.astro'
 import PageHead from '@/components/page-head.astro'
 import { badgeVariants } from '@/components/ui/badge'
@@ -49,7 +49,7 @@ const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
           <ul class="flex flex-col gap-4">
             {postsByYear[year].map((post) => (
               <li>
-                <BlogCard entry={post} />
+                <NoteCard entry={post} />
               </li>
             ))}
           </ul>
