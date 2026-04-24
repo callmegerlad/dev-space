@@ -4,6 +4,13 @@ import SearchModal from '@/components/search-modal.astro'
 import ThemeToggle from '@/components/theme-toggle.astro'
 import { NAV_LINKS } from '@/consts'
 import { Icon } from 'astro-icon/components'
+
+const pathname = Astro.url.pathname
+
+const isActiveLink = (href: string) =>
+  href === '/'
+    ? pathname === href
+    : pathname === href || pathname.startsWith(`${href}/`)
 ---
 
 <div data-pagefind-ignore class="relative">
@@ -21,7 +28,12 @@ import { Icon } from 'astro-icon/components'
           NAV_LINKS.map((item) => (
             <Link
               href={item.href}
-              class="text-foreground/60 hover:text-foreground active:text-foreground hover:bg-muted active:bg-muted inline-flex h-8 items-center rounded-md px-3 uppercase transition-colors"
+              class:list={[
+                'inline-flex h-8 items-center rounded-md px-3 uppercase transition-colors',
+                isActiveLink(item.href)
+                  ? 'text-foreground'
+                  : 'text-foreground/60 hover:text-foreground active:text-foreground hover:bg-muted active:bg-muted',
+              ]}
             >
               {item.label}
             </Link>
