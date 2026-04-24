@@ -69,6 +69,9 @@ export default defineConfig({
             codeBackground:
               'color-mix(in oklab, var(--muted) 25%, transparent)',
             frames: {
+              inlineButtonBorder: 'none',
+              inlineButtonBackground: 
+                'color-mix(in oklab, var(--muted) 25%, transparent)',
               editorActiveTabForeground: 'var(--muted-foreground)',
               editorActiveTabBackground:
                 'color-mix(in oklab, var(--muted) 25%, transparent)',
@@ -83,6 +86,7 @@ export default defineConfig({
               terminalTitlebarBackground: 'transparent',
               terminalTitlebarBorderBottomColor: 'transparent',
               terminalTitlebarForeground: 'var(--muted-foreground)',
+              tooltipSuccessBackground: 'var(--accent)',
             },
             lineNumbers: {
               foreground: 'var(--muted-foreground)',
