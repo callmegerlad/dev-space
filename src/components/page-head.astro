@@ -5,19 +5,21 @@ interface Props {
   title?: string
   description?: string
   noindex?: boolean
+  canonical?: string
 }
 
 const {
   title = SITE.title,
   description = SITE.description,
   noindex = false,
+  canonical = Astro.url.href,
 } = Astro.props
 const image = new URL('/static/logo.png', Astro.site)
 ---
 
 <title>{`${title} | ${SITE.title}`}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={SITE.href} />
+<link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
 <meta property="og:title" content={title} />

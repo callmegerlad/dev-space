@@ -12,6 +12,7 @@ const { post } = Astro.props
 const title = post.data.title || SITE.title
 const description = post.data.description || SITE.description
 const image = new URL('/static/logo.png', Astro.site)
+const canonical = Astro.url.href
 const author =
   post.data.authors && post.data.authors.length > 0
     ? post.data.authors.join(', ')
@@ -21,7 +22,7 @@ const author =
 <title>{`${title} | ${SITE.title}`}</title>
 <meta name="title" content={`${title} | ${SITE.title}`} />
 <meta name="description" content={description} />
-<link rel="canonical" href={SITE.href} />
+<link rel="canonical" href={canonical} />
 
 {isSubpost(post.id) && <meta name="robots" content="noindex" />}
 
