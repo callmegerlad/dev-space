@@ -36,6 +36,7 @@ const isIndexableSitemapPage = (page: string) => {
 
 export default defineConfig({
   site: SITE_URL,
+  trailingSlash: 'never',
   integrations: [
     mdx(),
     react(),
