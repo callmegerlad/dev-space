@@ -1,6 +1,6 @@
 ---
 title: "Setting Up macOS for Development: My 2026 Checklist"
-description: A practical, no-fluff checklist for setting up a clean and productive macOS environment, covering the tools and apps I actually use for development.
+description: A practical, no-fluff checklist for setting up a clean and productive environment, covering the tools and apps I actually use for development.
 date: 2026-04-24
 tags:
   - macOS
@@ -237,7 +237,7 @@ This is my current macOS setup, documented mostly for future me whenever I get a
 ## Terminal
 
 - [ ] [iTerm2](https://iterm2.com/), a powerful alternative to Terminal for macOS
-    - Colours, readability, autocompletion and split terminal displays, iTerm2 brings many great modern quality-of-life tweaks to the terminal on MacOS.
+    - Colours, readability, autocompletion and split terminal displays, iTerm2 brings many great modern quality-of-life tweaks to the terminal on macOS.
     
     ![Split Pane in iTerm2](./assets/iterm2-split-pane.png)
     
@@ -338,11 +338,30 @@ This is my current macOS setup, documented mostly for future me whenever I get a
 	
 	![Split View in Arc](./assets/arc-split-view.png)
 	
-	<Callout variant="important">
+	<Callout title="Potential Shortcomings" variant="important">
 	Arc auto-archives (deletes) inactive tabs after a set time, up to 30 days, and there's no setting to disable this. Definitely a bold choice, and one that will need some getting used to. 
 	
 	**The workaround**: pin any tabs you actually want to keep around.
 	</Callout>
+	
+- [ ] [Zen Browser](https://zen-browser.app/)
+    - Arc-inspired, open-source, and Firefox-based.
+    - This is basically what I'd switch to if (or, realistically, when) Arc's lack of development becomes too much. Besides, many of the Arc features I mentioned above actually have direct equivalents here:
+    
+	    - **Workspaces**: same idea as Arc's Spaces.
+	    - **Vertical Sidebar**: same vertical tab management that I've grown used to in Arc.
+	    - **Split View**: also supported, with a similar feel. In fact, Zen provides more vertical real-estate in its implementation, removing the URL bar in split view.
+	
+	Split View in Arc (top-half) vs. in Zen (bottom-half)
+	  ![Split View in Arc vs. in Zen](./assets/arc-vs-zen-split-view.png)
+	
+    - Honestly, the experience is close enough that the muscle memory carries over. I've been testing it on macOS and daily-driving it on Windows, and the rough edges are few and rare enough to not get in the way of daily browsing.
+    
+    <Callout title="Potential Shortcomings" variant="important">
+    Zen [doesn't support DRM-protected content](https://docs.zen-browser.app/faq#why-cant-zen-browser-play-drm-protected-content), which means streaming platforms like *Netflix* and *Disney+* won't work. Could be a dealbreaker if you watch a lot of content in your browser, so worth knowing upfront.
+    
+    Also, it's probably worth noting that Zen is still in beta as of writing this, so expect the occasional bug.
+    </Callout>
 
 ---
 
@@ -356,13 +375,13 @@ This is my current macOS setup, documented mostly for future me whenever I get a
 
 - [ ] Apple **Mail**, **Reminders**, and **Calendar** (already comes pre-installed on macOS)
     - Nothing fancy here, just the default Apple apps. 
-    - I stick with them because of how seamlessly and simple they are.
+    - I stick with them because of how seamless and simple they are.
 
 - [ ] [Spotify](https://www.spotify.com/)
 
 ---
 
-## Additional Tools Utilities
+## Additional Tools / Utilities
 
 - [ ] [Raycast](https://www.raycast.com/), a replacement to the built-in Spotlight feature
     
@@ -389,6 +408,8 @@ This is my current macOS setup, documented mostly for future me whenever I get a
 - [ ] [Blip](https://blip.net/) for quick, convenient, cross-platform file sharing
     - AirDrop is locked to the Apple ecosystem and to close-proximity sharing, so I use Blip to send large files across my various devices, including Android and Windows.
 
+---
+
 ## macOS Settings
 
 ### Finder
@@ -400,3 +421,9 @@ This is my current macOS setup, documented mostly for future me whenever I get a
 
 - [ ] **Automatically hide**
     - In `System Settings` > `Desktop & Dock` > Enable `Automatically hide and show the Dock`.
+
+---
+
+## Got something I missed?
+
+This is a working list that'll keep changing as I find better tools or realise I've been doing things wrong. If you've got a recommendation, spotted a mistake, or just have a different setup that works well for you, do let me know to check it out!
