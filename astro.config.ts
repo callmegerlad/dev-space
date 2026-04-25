@@ -19,9 +19,29 @@ import type { ExpressiveCodeTheme } from 'rehype-expressive-code'
 
 import tailwindcss from '@tailwindcss/vite'
 
+const SITE_URL = 'https://dev.geraldkjk.com'
+
+const isIndexableSitemapPage = (page: string) => {
+  const pathname = new URL(page, SITE_URL).pathname
+
+  const isSubpost =
+    pathname.startsWith('/notes/') &&
+    pathname.split('/').filter(Boolean).length > 2
+  const isTagPage = pathname.startsWith('/tags/') && pathname !== '/tags/'
+  const isAuthorPage =
+    pathname.startsWith('/authors/') && pathname !== '/authors/'
+
+  return !(isSubpost || isTagPage || isAuthorPage)
+}
+
 export default defineConfig({
-  site: 'https://dev.geraldkjk.com',
-  integrations: [mdx(), react(), sitemap(), icon()],
+  site: SITE_URL,
+  integrations: [
+    mdx(),
+    react(),
+    sitemap({ filter: isIndexableSitemapPage }),
+    icon(),
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
@@ -70,7 +90,7 @@ export default defineConfig({
               'color-mix(in oklab, var(--muted) 25%, transparent)',
             frames: {
               inlineButtonBorder: 'none',
-              inlineButtonBackground: 
+              inlineButtonBackground:
                 'color-mix(in oklab, var(--muted) 25%, transparent)',
               editorActiveTabForeground: 'var(--muted-foreground)',
               editorActiveTabBackground:
