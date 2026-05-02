@@ -28,8 +28,7 @@ const isIndexableSitemapPage = (page: string) => {
     pathname.startsWith('/notes/') &&
     pathname.split('/').filter(Boolean).length > 2
   const isTagPage = pathname.startsWith('/tags/') && pathname !== '/tags/'
-  const isAuthorPage =
-    pathname.startsWith('/authors/') && pathname !== '/authors/'
+  const isAuthorPage = pathname === '/authors' || pathname.startsWith('/authors/')
 
   return !(isSubpost || isTagPage || isAuthorPage)
 }
