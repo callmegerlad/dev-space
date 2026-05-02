@@ -15,6 +15,8 @@ import heroImage from '@/assets/me.webp'
 const indexContentEntry = await getEntry('pages', 'index')
 
 const {
+  title = SITE.title,
+  description = SITE.description,
   pageTitle = 'Home',
   heroEyebrow = 'Dev Space · Notes & Projects',
   heroTitle = 'Documenting what I learn,',
@@ -57,7 +59,7 @@ if (featuredSelectionMode === 'manual') {
 ---
 
 <Layout class="flex max-w-3xl flex-col gap-12">
-  <PageHead slot="head" title={pageTitle} />
+  <PageHead slot="head" title={title} description={description} />
   <section data-pagefind-ignore class="bg-card relative overflow-hidden rounded-2xl border">
     <div
       class="from-accent/10 to-accent/0 absolute inset-x-0 top-0 h-24 bg-linear-to-b"

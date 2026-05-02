@@ -19,6 +19,8 @@ if (!aboutContentEntry) {
 const { Content } = await render(aboutContentEntry)
 
 const {
+  title = 'About',
+  description = SITE.description,
   pageTitle = 'About',
   eyebrow = 'About Me',
   headline = 'Practical learner and maker.',
@@ -63,7 +65,7 @@ const personSchema = {
   <!-- Person Schema for About page SEO -->
   <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
 
-  <PageHead slot="head" title={pageTitle} />
+  <PageHead slot="head" title={title} description={description} />
   <Breadcrumbs items={[{ label: pageTitle, icon: 'lucide:user' }]} />
 
   <section
