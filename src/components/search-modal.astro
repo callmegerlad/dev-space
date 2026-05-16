@@ -182,28 +182,109 @@ import { Icon } from 'astro-icon/components'
       return template?.outerHTML || ''
     }
 
+    const escapeHtml = (value) =>
+      value
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+
     const renderResults = (items) => {
       if (!resultsRoot) return
 
-      resultsRoot.innerHTML = items
-        .map((item) => {
-          const excerpt = item.excerpt
-            ? `<p class="text-muted-foreground mt-1 text-sm leading-relaxed">${item.excerpt}...</p>`
-            : ''
-          const typeBadge = getResultTypeBadgeHtml(item.type)
+      const groupedItems = items.reduce((groups, item) => {
+        const existing = groups.get(item.pageUrl)
+        if (existing) {
+          existing.matches.push(item)
+          return groups
+        }
+
+        groups.set(item.pageUrl, {
+          pageUrl: item.pageUrl,
+          pageTitle: item.title,
+          type: item.type,
+          matches: [item],
+        })
+        return groups
+      }, new Map())
+
+      resultsRoot.innerHTML = Array.from(groupedItems.values())
+        .map((group) => {
+          if (group.matches.length === 1) {
+            const match = group.matches[0]
+            const excerpt = match.excerpt
+              ? `<p class="text-muted-foreground mt-1 text-sm leading-relaxed">${match.excerpt}...</p>`
+              : ''
+            const typeBadge = getResultTypeBadgeHtml(group.type)
+            const sectionLabel = match.section
+              ? `<p class="text-muted-foreground mb-1 text-[11px] font-medium tracking-[0.12em] uppercase">${escapeHtml(match.section)}</p>`
+              : ''
+
+            return `
+              <li>
+                <a
+                  href="${match.url}"
+                  class="group bg-background/70 hover:bg-muted/40 hover:border-accent/40 hover:shadow-accent/10 block rounded-xl border p-3.5 shadow-xs transition-all duration-200"
+                >
+                  <div class="mb-1.5 flex items-start justify-between gap-2">
+                    <div class="pr-1">
+                      ${sectionLabel}
+                      <p class="text-foreground text-[15px] leading-snug font-medium">${escapeHtml(match.title)}</p>
+                    </div>
+                    ${typeBadge}
+                  </div>
+                  ${excerpt}
+                  <p class="text-muted-foreground mt-2 text-xs font-mono tracking-wide uppercase">${escapeHtml(match.url)}</p>
+                </a>
+              </li>
+            `
+          }
+
+          const typeBadge = getResultTypeBadgeHtml(group.type)
+          const subResults = `<ul class="mt-3 space-y-1.5 border-t pt-3">
+              ${group.matches
+                .map((match) => {
+                  const sectionText = match.section || 'Open page'
+                  return `
+                    <li>
+                      <a
+                        href="${match.url}"
+                        class="group/subresult hover:bg-muted/60 flex items-start justify-between gap-3 rounded-lg px-2.5 py-2 transition-colors"
+                      >
+                        <div class="min-w-0">
+                          <p class="text-foreground text-sm font-medium leading-snug">${escapeHtml(sectionText)}</p>
+                          ${
+                            match.excerpt
+                              ? `<p class="text-muted-foreground mt-0.5 line-clamp-2 text-xs leading-relaxed">${match.excerpt}...</p>`
+                              : ''
+                          }
+                        </div>
+                        <span class="text-muted-foreground group-hover/subresult:text-foreground shrink-0 text-xs transition-colors">#</span>
+                      </a>
+                    </li>
+                  `
+                })
+                .join('')}
+            </ul>`
+
           return `
             <li>
-              <a
-                href="${item.url}"
-                class="group bg-background/70 hover:bg-muted/40 hover:border-accent/40 hover:shadow-accent/10 block rounded-xl border p-3.5 shadow-xs transition-all duration-200"
-              >
+              <div class="bg-background/70 rounded-xl border p-3.5 shadow-xs">
                 <div class="mb-1.5 flex items-start justify-between gap-2">
-                  <p class="text-foreground pr-1 text-[15px] leading-snug font-medium">${item.title}</p>
+                  <div class="pr-1">
+                    <a
+                      href="${group.pageUrl}"
+                      class="text-foreground hover:text-accent text-[15px] leading-snug font-medium transition-colors"
+                    >
+                      ${escapeHtml(group.pageTitle)}
+                    </a>
+                  </div>
                   ${typeBadge}
                 </div>
-                ${excerpt}
-                <p class="text-muted-foreground mt-2 text-xs font-mono tracking-wide uppercase">${item.url}</p>
-              </a>
+                <p class="text-muted-foreground mt-2 text-xs font-mono tracking-wide uppercase">${escapeHtml(group.pageUrl)}</p>
+                ${subResults}
+              </div>
             </li>
           `
         })
@@ -226,16 +307,34 @@ import { Icon } from 'astro-icon/components'
         const detailed = await Promise.all(
           result.results.map(async (item) => {
             const data = await item.data()
-            return {
-              url: data.url,
-              title: data.meta?.title || data.url,
-              excerpt: data.excerpt || '',
-              type: getResultType(data.url),
-            }
+            const pageTitle = data.meta?.title || data.url
+            const pageType = getResultType(data.url)
+            const subResults = (data.sub_results ?? []).map((subResult) => ({
+              pageUrl: data.url,
+              url: subResult.url || data.url,
+              title: pageTitle,
+              section: subResult.anchor?.text || '',
+              excerpt: subResult.excerpt || data.excerpt || '',
+              type: pageType,
+            }))
+
+            if (subResults.length > 0) return subResults
+
+            return [
+              {
+                pageUrl: data.url,
+                url: data.url,
+                title: pageTitle,
+                section: '',
+                excerpt: data.excerpt || '',
+                type: pageType,
+              },
+            ]
           }),
         )
 
         const filtered = detailed
+          .flat()
           .filter((item) => !shouldIgnoreResultUrl(item.url))
           .slice(0, 12)
 
