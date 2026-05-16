@@ -1,18 +1,20 @@
 ---
 import { Icon } from 'astro-icon/components'
+import KeyHint from '@/components/key-hint.astro'
 ---
 
 <>
   <button
     type="button"
     id="search-open"
-    class="text-muted-foreground hover:text-foreground hover:bg-muted -my-2 -me-2 inline-flex size-8 items-center justify-center rounded-md transition-colors cursor-pointer"
+    class="text-muted-foreground hover:text-foreground hover:bg-muted -my-2 -me-2 inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2 transition-colors cursor-pointer"
     aria-haspopup="dialog"
     aria-controls="search-modal"
     aria-label="Open search"
-    title="Search (⌘K)"
+    title="Search (⌘+K)"
   >
     <Icon name="lucide:search" class="size-4" />
+    <KeyHint label="⌘+K" class="md:inline-flex" />
     <span class="sr-only">Open search</span>
   </button>
 
@@ -37,20 +39,36 @@ import { Icon } from 'astro-icon/components'
       >
         <div class="flex items-center gap-2 border-b px-3 py-2">
           <Icon name="lucide:search" class="text-muted-foreground size-4" />
-          <input
-            id="search-input"
-            type="search"
-            class="placeholder:text-muted-foreground h-9 w-full bg-transparent text-sm outline-none"
-            placeholder="Search notes, projects, and pages..."
-            autocomplete="off"
-          />
+          <div class="relative min-w-0 flex-1">
+            <input
+              id="search-input"
+              type="search"
+              class="placeholder:text-muted-foreground h-9 w-full bg-transparent pr-10 text-sm outline-none"
+              placeholder="Search notes and project pages..."
+              autocomplete="off"
+            />
+            <button
+              type="button"
+              id="search-clear"
+              class="text-muted-foreground hover:text-foreground hover:bg-muted absolute top-1/2 right-1 hidden size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md transition-colors"
+              aria-label="Clear search"
+              title="Clear search"
+          >
+              <Icon name="lucide:x" class="size-3.5" />
+            </button>
+          </div>
+          <span
+            class="bg-border h-5 w-px shrink-0"
+            aria-hidden="true"
+          ></span>
           <button
             type="button"
             id="search-close"
-            class="text-muted-foreground hover:text-foreground hover:cursor-pointer rounded-md p-1"
+            class="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex h-8 shrink-0 cursor-pointer items-center gap-2 rounded-md px-2 text-xs font-medium tracking-wide uppercase transition-colors"
             aria-label="Close search"
           >
-            <Icon name="lucide:x" class="size-4" />
+            <KeyHint label="esc" class="md:inline-flex" />
+            <Icon name="lucide:x" class="size-3.5" />
           </button>
         </div>
 
@@ -103,6 +121,7 @@ import { Icon } from 'astro-icon/components'
 
     const openButton = document.getElementById('search-open')
     const closeButton = document.getElementById('search-close')
+    const clearButton = document.getElementById('search-clear')
     const backdrop = document.getElementById('search-backdrop')
     const panel = document.getElementById('search-panel')
     const input = document.getElementById('search-input')
@@ -126,6 +145,13 @@ import { Icon } from 'astro-icon/components'
 
     const clearResults = () => {
       if (resultsRoot) resultsRoot.innerHTML = ''
+    }
+
+    const updateClearButton = () => {
+      if (!(clearButton instanceof HTMLElement)) return
+      const hasQuery = Boolean(input?.value?.trim())
+      clearButton.classList.toggle('hidden', !hasQuery)
+      clearButton.classList.toggle('flex', hasQuery)
     }
 
     const openModal = () => {
@@ -295,6 +321,7 @@ import { Icon } from 'astro-icon/components'
       if (!query || query.length < 2) {
         clearResults()
         setStatus('Type at least 2 characters.')
+        updateClearButton()
         return
       }
 
@@ -344,9 +371,11 @@ import { Icon } from 'astro-icon/components'
             ? 'No results found.'
             : `Showing ${filtered.length} result${filtered.length === 1 ? '' : 's'}.`,
         )
+        updateClearButton()
       } catch {
         clearResults()
         setStatus('Search is unavailable right now. Build the site to generate the Pagefind index.')
+        updateClearButton()
       }
     }
 
@@ -363,8 +392,18 @@ import { Icon } from 'astro-icon/components'
 
     input?.addEventListener('input', (event) => {
       const query = event.target?.value?.trim() || ''
+      updateClearButton()
       if (debounceTimer) clearTimeout(debounceTimer)
       debounceTimer = setTimeout(() => search(query), 250)
+    })
+
+    clearButton?.addEventListener('click', () => {
+      if (!(input instanceof HTMLInputElement)) return
+      input.value = ''
+      updateClearButton()
+      clearResults()
+      setStatus('Type at least 2 characters.')
+      input.focus()
     })
 
     resultsRoot?.addEventListener('click', (event) => {
@@ -396,8 +435,17 @@ import { Icon } from 'astro-icon/components'
         closeModal()
       }
     })
+
+    updateClearButton()
   }
 
   document.addEventListener('astro:page-load', initSearchModal)
   document.addEventListener('astro:after-swap', initSearchModal)
 </script>
+
+<style>
+  #search-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+</style>
