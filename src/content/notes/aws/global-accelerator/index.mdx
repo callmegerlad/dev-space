@@ -1,0 +1,180 @@
+---
+title: 🌐 Global Accelerator
+description: Core notes on AWS Global Accelerator, Anycast IPs, endpoint routing, health checks, security, and how it differs from CloudFront.
+date: 2026-05-16
+tags:
+  - AWS
+  - GlobalAccelerator
+  - Networking
+  - Edge
+  - Availability
+image: ""
+authors:
+  - geraldkjk
+---
+import Callout from '@/components/callout.astro'
+
+## What is AWS Global Accelerator?
+
+AWS Global Accelerator is a networking service that improves the availability and performance of applications by routing user traffic through the **AWS global network**.
+
+It gives your application **static Anycast IP addresses** that act as fixed entry points.
+
+- For IPv4 accelerators, AWS provides **two static IPv4 addresses**
+- For dual-stack accelerators, AWS provides **two IPv4 addresses and two IPv6 addresses**
+- User traffic enters the AWS network at a nearby edge location
+- AWS then routes the traffic to a healthy application endpoint in one or more AWS Regions
+
+<Callout variant="note">
+Global Accelerator does **not** cache content at the edge. It accelerates network routing to your application endpoints.
+</Callout>
+
+---
+
+## Unicast IP vs Anycast IP
+
+### Unicast IP
+
+With a unicast IP, one server or endpoint owns one IP address.
+
+- Different servers usually have different IP addresses
+- The client connects to a specific server address
+
+### Anycast IP
+
+With an Anycast IP, multiple edge locations can advertise the same IP address.
+
+- The client uses the same IP address
+- The network routes the client to a nearby or optimal edge location
+- From there, AWS carries the traffic across its global network
+
+<Callout variant="important">
+In Global Accelerator, the static IP addresses are Anycast from AWS edge locations. This means users connect to the same IPs globally, but traffic enters AWS close to the user.
+</Callout>
+
+---
+
+## How traffic flows
+
+A typical request flow looks like this:
+
+1. The client connects to one of the Global Accelerator static IP addresses
+2. Traffic reaches the nearest suitable AWS edge location
+3. Traffic travels over the AWS global network
+4. Global Accelerator sends the request to a healthy endpoint
+
+For TCP traffic, Global Accelerator can terminate the client connection at the edge and establish a separate connection to the application endpoint.
+
+---
+
+## Supported endpoint types
+
+For standard accelerators, endpoints can include:
+
+- Application Load Balancers
+- Network Load Balancers
+- EC2 instances
+- Elastic IP addresses
+
+Application Load Balancers and Network Load Balancers can be either **internet-facing** or **internal**.
+
+<Callout variant="tip">
+Global Accelerator is useful when you want a stable global entry point while still being able to change or add regional backend endpoints.
+</Callout>
+
+---
+
+## Health checks and failover
+
+Global Accelerator continuously checks the health of endpoints in a standard accelerator.
+
+- Traffic is routed only to healthy active endpoints
+- If an endpoint becomes unhealthy, new traffic can be routed to another healthy endpoint
+- This is useful for multi-Region failover and disaster recovery
+
+You can also control traffic using:
+
+- **Endpoint weights**: adjust how much traffic each endpoint receives
+- **Traffic dials**: adjust how much traffic goes to an endpoint group or Region
+
+<Callout variant="important">
+If an exam question mentions fast regional failover, healthy endpoints, or multi-Region routing with static IPs, Global Accelerator is often a strong fit.
+</Callout>
+
+---
+
+## Security
+
+Global Accelerator can improve the network security posture of an application.
+
+- Clients only need to allow-list a small set of static IP addresses
+- For IPv4 accelerators, this usually means 2 fixed public IPs
+- The static entry points are protected by AWS Shield
+- Origins can be masked behind Global Accelerator instead of being exposed directly to the public internet
+
+<Callout variant="note">
+Global Accelerator helps with DDoS resilience and fixed entry points, but it is not a replacement for security groups, authentication, encryption, or AWS WAF where needed.
+</Callout>
+
+---
+
+## AWS Global Accelerator vs CloudFront
+
+Both services use AWS edge locations and the AWS global network, but they solve different problems.
+
+| Feature           | CloudFront                                       | Global Accelerator                                                |
+| ----------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
+| Main purpose      | Content delivery network                         | Network accelerator                                               |
+| Best for          | Static and dynamic web content                   | TCP or UDP applications                                           |
+| Caching           | ✅ Can cache content at the edge                  | ❌ Does not cache content                                          |
+| Edge behavior     | Serves cacheable content from edge locations     | Routes traffic through AWS edge locations                         |
+| Entry point       | CloudFront distribution domain name              | Static Anycast IP addresses                                       |
+| Common protocols  | HTTP and HTTPS web traffic                       | TCP and UDP                                                       |
+| Good use cases    | Websites, APIs, images, videos, dynamic web apps | Gaming, IoT, VoIP, static IP allow-listing, multi-Region failover |
+| Regional failover | Possible with origin failover                    | Built around routing to healthy regional endpoints                |
+
+<Callout variant="important">
+Use **CloudFront** when the question focuses on CDN, caching, web content, images, videos, or serving content from the edge.  
+Use **Global Accelerator** when the question focuses on static IPs, TCP/UDP traffic, low-latency routing, or fast regional failover.
+</Callout>
+
+---
+
+## Common use cases
+
+### Static IP allow-listing
+
+Some clients or enterprise networks require fixed IP addresses to be allow-listed.
+
+Global Accelerator gives the application stable IPs even if the backend endpoints change.
+
+### Multi-Region failover
+
+Global Accelerator can route users to healthy endpoints across Regions.
+
+This is useful for high availability and disaster recovery.
+
+### Low-latency TCP or UDP applications
+
+Global Accelerator is useful for latency-sensitive applications such as:
+
+- Gaming
+- IoT
+- Voice over IP
+- Real-time applications
+
+### Blue/green or traffic shifting
+
+Endpoint weights and traffic dials can be used to gradually shift traffic between endpoints or Regions.
+
+---
+
+## What to remember
+
+- Global Accelerator gives applications **static Anycast IP addresses**
+- Traffic enters the **AWS global network** close to the user
+- It routes traffic to **healthy regional endpoints**
+- It supports **TCP and UDP**
+- It does **not** cache content
+- CloudFront is usually better for CDN and web caching use cases
+- Global Accelerator is usually better for static IP, non-HTTP, and fast failover use cases
