@@ -3,29 +3,94 @@ import { cn } from '@/lib/utils'
 
 interface Props {
   label: string
+  macLabel?: string
   class?: string
 }
 
-const { label, class: className } = Astro.props
-const keyParts = label.includes('⌘') ? label.split('') : [label]
+const { label, macLabel, class: className } = Astro.props
+
+const getKeyParts = (value: string) =>
+  (value.startsWith('⌘') ? ['⌘', value.slice(1)] : [value]).filter(Boolean)
+
+const keyPartClassName = (part: string) =>
+  cn(
+    'inline-flex items-center leading-none align-middle',
+    part === '⌘' && 'text-[12px]',
+  )
 ---
 
 <kbd
+  data-key-hint
+  data-label={label}
+  data-mac-label={macLabel}
   class={cn(
     'border-border bg-muted/60 text-muted-foreground hidden items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium tracking-normal normal-case',
     className,
   )}
 >
-  {
-    keyParts.map((part) => (
-      <span
-        class={cn(
-          part === '⌘' && 'text-[12px] leading-none',
-          part !== '⌘' && keyParts.length > 1 && 'leading-none',
-        )}
-      >
-        {part}
-      </span>
-    ))
-  }
+  <span data-key-hint-content class="inline-flex items-center gap-px">
+    {
+      getKeyParts(label).map((part) => (
+        <span class={keyPartClassName(part)}>{part}</span>
+      ))
+    }
+  </span>
 </kbd>
+
+<script is:inline>
+  ;(() => {
+    if (window.__keyHintPlatformInitialized) return
+    window.__keyHintPlatformInitialized = true
+
+    const getPlatformType = () => {
+      const platform = navigator.userAgentData?.platform
+      if (typeof platform === 'string' && platform.length > 0) {
+        return /mac/i.test(platform) ? 'mac' : 'other'
+      }
+
+      return /mac|iphone|ipad|ipod/i.test(navigator.userAgent) ? 'mac' : 'other'
+    }
+
+    const getKeyParts = (value) =>
+      value.startsWith('⌘') ? ['⌘', value.slice(1)].filter(Boolean) : [value]
+
+    const renderKeyHint = (content, value) => {
+      content.textContent = ''
+
+      getKeyParts(value).forEach((part) => {
+        const span = document.createElement('span')
+        span.className = [
+          'inline-flex',
+          'items-center',
+          'leading-none',
+          'align-middle',
+          part === '⌘' ? 'text-[12px]' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')
+        span.textContent = part
+        content.appendChild(span)
+      })
+    }
+
+    const updateKeyHints = () => {
+      const useMacLabel = getPlatformType() === 'mac'
+
+      document.querySelectorAll('[data-key-hint]').forEach((element) => {
+        if (!(element instanceof HTMLElement)) return
+
+        const defaultLabel = element.dataset.label
+        const macLabel = element.dataset.macLabel
+        const content = element.querySelector('[data-key-hint-content]')
+        const nextLabel = useMacLabel && macLabel ? macLabel : defaultLabel
+
+        if (!(content instanceof HTMLElement) || !nextLabel) return
+        renderKeyHint(content, nextLabel)
+      })
+    }
+
+    document.addEventListener('astro:page-load', updateKeyHints)
+    document.addEventListener('astro:after-swap', updateKeyHints)
+    updateKeyHints()
+  })()
+</script>
