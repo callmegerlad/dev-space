@@ -30,20 +30,7 @@ An EBS volume is a network-attached storage device that can be attached to an EC
 <Callout variant="note">
 Think of EBS as **network storage for EC2**, unlike Instance Store, which is physically attached and ephemeral.
 </Callout>
----
-## Moving EBS volumes across AZs and Regions
 
-Because EBS volumes are tied to a single AZ, you cannot directly move a volume across AZs or [Regions](./regions).
-
-### Tutorial: How to move them
-
-- To move an EBS volume to another AZ, you must first create a **snapshot**.
-- Then, create a new volume from that snapshot in the target AZ.
-- Snapshots can also be copied across Regions.
-
-<Callout variant="important">
-EBS volumes are AZ-scoped. For exam questions, if you need to move a volume across AZs or Regions, the answer usually involves a **snapshot**.
-</Callout>
 ---
 ## EBS volume types
 
@@ -62,6 +49,7 @@ EBS provides different volume types for different performance and cost requireme
 <Callout variant="note">
 Only **gp2**, **gp3**, **io1**, and **io2** can be used as **boot volumes**.
 </Callout>
+
 ---
 ## EBS Multi-Attach
 
@@ -75,6 +63,7 @@ EBS Multi-Attach allows the same EBS volume to be attached to multiple EC2 insta
 <Callout variant="important">
 EBS Multi-Attach requires a **cluster-aware file system**. Traditional file systems such as **XFS** or **ext4** are not suitable for this use case.
 </Callout>
+
 ---
 ## EBS encryption
 
@@ -87,3 +76,19 @@ EBS encryption protects data at rest and in transit between the EC2 instance and
 <Callout variant="tip">
 A good default is to assume that EBS volumes should be encrypted unless there is a specific reason not to.
 </Callout>
+
+---
+## Tutorial: Moving EBS volumes across AZs and Regions
+
+Because EBS volumes are tied to a single AZ, you cannot directly move a volume across AZs or [Regions](./regions).
+
+### Steps
+
+- To move an EBS volume to another AZ, you must first create a **snapshot**.
+- Then, create a new volume from that snapshot in the target AZ.
+- Snapshots can also be copied across Regions.
+
+<Callout variant="important">
+EBS volumes are AZ-scoped. For exam questions, if you need to move a volume across AZs or Regions, the answer usually involves a **snapshot**.
+</Callout>
+---
