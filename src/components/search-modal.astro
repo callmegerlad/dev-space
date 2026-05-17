@@ -11,10 +11,11 @@ import KeyHint from '@/components/key-hint.astro'
     aria-haspopup="dialog"
     aria-controls="search-modal"
     aria-label="Open search"
-    title="Search (⌘+K)"
+    title="Search"
   >
     <Icon name="lucide:search" class="size-4" />
-    <KeyHint label="⌘+K" class="md:inline-flex" />
+    <KeyHint label="Ctrl" macLabel="⌘" class="md:inline-flex h-5" />
+    <KeyHint label="K" macLabel="K" class="md:inline-flex h-5" />
     <span class="sr-only">Open search</span>
   </button>
 
@@ -67,8 +68,8 @@ import KeyHint from '@/components/key-hint.astro'
             class="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex h-8 shrink-0 cursor-pointer items-center gap-2 rounded-md px-2 text-xs font-medium tracking-wide uppercase transition-colors"
             aria-label="Close search"
           >
-            <KeyHint label="esc" class="md:inline-flex" />
             <Icon name="lucide:x" class="size-3.5" />
+            <KeyHint label="esc" class="md:inline-flex h-5" />
           </button>
         </div>
 
