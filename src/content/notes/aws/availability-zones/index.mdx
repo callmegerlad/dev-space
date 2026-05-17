@@ -1,0 +1,74 @@
+---
+title: Availability Zones (AZs)
+description: Core notes on AWS Availability Zones, fault isolation, AZ IDs, and multi-AZ design.
+date: 2026-05-17
+tags:
+  - AWS
+  - Availability
+  - Infrastructure
+image: ""
+authors:
+  - geraldkjk
+---
+import Callout from '@/components/callout.astro'
+
+## What are Availability Zones?
+
+Availability Zones (AZs) are isolated locations within an AWS [Region](./regions).
+
+Each Availability Zone consists of **one or more discrete data centers** with separate and redundant power, networking, and connectivity.
+
+- AZs are designed to be isolated from failures in other AZs.
+- AZs within the same Region are connected with low-latency networking.
+- Using multiple AZs helps improve availability and fault tolerance.
+
+<Callout variant="note">
+Think of an AZ as an **isolated failure boundary** within a Region.
+</Callout>
+
+---
+
+## Why Availability Zones matter
+
+Availability Zones are a core building block for high availability on AWS.
+
+- If all resources are deployed in a single AZ, an AZ-level failure can affect the entire workload.
+- Spreading resources across multiple AZs improves resilience.
+- Many AWS architectures use Multi-AZ deployment for production workloads.
+
+<Callout variant="important">
+A common exam takeaway is this: **Multi-AZ** improves availability within a Region, but it is **not the same** as multi-Region deployment.
+</Callout>
+
+---
+
+## AZ names vs AZ IDs
+
+Availability Zones have both **AZ names** and **AZ IDs**.
+
+### Key points
+
+- AZ names look like `ap-southeast-1a` or `us-east-1b`.
+- AZ IDs look like `apse1-az1` or `use1-az2`.
+- **AZ IDs** refer to the same physical Availability Zone across AWS accounts.
+- In some Regions, the AZ name shown in one account may not refer to the same physical AZ in another account.
+
+<Callout variant="important">
+When coordinating infrastructure across multiple AWS accounts, use the **AZ ID** rather than assuming `Region-letter` names match physically.
+</Callout>
+
+---
+
+## Common design use cases
+
+Availability Zones are commonly used to design for resilience.
+
+### Examples
+
+- Run [EC2 instances](./elastic-compute-cloud) across multiple AZs behind a load balancer
+- Deploy Multi-AZ databases for higher availability
+- Spread stateful and stateless resources across AZs to reduce single-AZ risk
+
+<Callout variant="tip">
+If a question asks how to improve availability **within one Region**, choosing **multiple Availability Zones** is often the right direction.
+</Callout>

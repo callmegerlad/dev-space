@@ -22,14 +22,14 @@ Amazon Elastic Compute Cloud (EC2) is AWS's virtual server offering that lets yo
 
 An Elastic Network Interface (ENI) is a virtual network interface attached to an EC2 instance.
 
-- An ENI is tied to a specific Availability Zone (AZ).  
+- An ENI is tied to a specific [Availability Zone (AZ)](./availability-zones).  
 - An ENI cannot be attached to an EC2 instance in a different AZ.
 
 ## EC2 Hibernate
 
 EC2 hibernation allows an instance to preserve its in-memory state and resume later. To enable hibernation:
 
-- the root volume must be an **EBS volume**
+- the root volume must be an **[EBS volume](./elastic-block-store#ebs-volumes)**
 - the root volume must be **encrypted** 
 
 This is required to protect any sensitive data written from memory to disk.

@@ -15,14 +15,14 @@ import Callout from '@/components/callout.astro'
 
 ## What is EBS?
 
-Amazon Elastic Block Store (EBS) is AWS’s block storage service that provides persistent storage volumes for EC2 instances.
+Amazon Elastic Block Store (EBS) is AWS’s block storage service that provides persistent storage volumes for [EC2 instances](./elastic-compute-cloud).
 
 ---
 ## EBS volumes
 
 An EBS volume is a network-attached storage device that can be attached to an EC2 instance.
 
-- An EBS volume is bound to a specific Availability Zone (AZ).
+- An EBS volume is bound to a specific [Availability Zone (AZ)](./availability-zones).
 - It can be detached from one instance and attached to another instance within the same AZ.
 - Because it is network-attached storage, it is not physically tied to a single host machine.
 - EBS volumes are persistent, so data remains even after the EC2 instance is stopped.
@@ -33,7 +33,7 @@ Think of EBS as **network storage for EC2**, unlike Instance Store, which is phy
 ---
 ## Moving EBS volumes across AZs and Regions
 
-Because EBS volumes are tied to a single AZ, you cannot directly move a volume across AZs or Regions.
+Because EBS volumes are tied to a single AZ, you cannot directly move a volume across AZs or [Regions](./regions).
 
 ### Tutorial: How to move them
 

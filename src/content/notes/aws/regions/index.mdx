@@ -1,0 +1,73 @@
+---
+title: Regions
+description: Core notes on AWS Regions, isolation boundaries, regional design, and common architecture implications.
+date: 2026-05-17
+tags:
+  - AWS
+  - Regions
+  - Availability
+  - Infrastructure
+image: ""
+authors:
+  - geraldkjk
+---
+import Callout from '@/components/callout.astro'
+
+## What are Regions?
+
+An AWS Region is a separate geographic area where AWS clusters multiple [Availability Zones](./availability-zones).
+
+- Each Region is an independent geographic and fault-isolation boundary.
+- Regions are designed to be isolated from each other.
+- A Region contains multiple Availability Zones.
+
+<Callout variant="note">
+Think of a Region as the **bigger isolation boundary**, and Availability Zones as the **smaller isolated locations inside it**.
+</Callout>
+
+---
+
+## Why Regions matter
+
+Choosing a Region affects more than just location.
+
+### Key considerations
+
+- **Latency**: choose a Region closer to users or workloads
+- **Compliance and data residency**: some workloads must stay in a particular geography
+- **Service availability**: not every AWS service is available in every Region
+- **Disaster recovery**: multi-Region design can improve resilience against Regional failures
+
+<Callout variant="important">
+A Region choice is often a trade-off between **latency**, **compliance**, **service availability**, and **resilience requirements**.
+</Callout>
+
+---
+
+## Regional isolation
+
+Regions are separate from one another.
+
+- Resources are generally scoped to a Region
+- Actions performed in one Region do not automatically apply to another Region
+- Data is not automatically replicated across Regions unless the service supports it or you configure replication yourself
+
+<Callout variant="important">
+A common exam point is this: **multi-AZ** protects against an AZ failure, while **multi-Region** helps protect against a Regional failure.
+</Callout>
+
+---
+
+## Common design use cases
+
+Regions are important when designing for users, regulation, and disaster recovery.
+
+### Examples
+
+- Deploy in a Region close to the main user base to reduce latency
+- Keep workloads in a specific geography for regulatory reasons
+- Use multiple Regions for disaster recovery or global applications
+
+<Callout variant="tip">
+If the question mentions **global users**, **cross-Region disaster recovery**, or **data residency requirements**, Region selection is usually a key part of the answer.
+</Callout>

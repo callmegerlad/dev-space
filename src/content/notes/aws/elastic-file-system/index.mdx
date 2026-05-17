@@ -20,7 +20,7 @@ Amazon Elastic File System (EFS) is AWS’s managed file storage service that pr
 It is a managed **Network File System (NFS)** that can be mounted by multiple clients at the same time.
 
 - EFS uses the **NFSv4** protocol.
-- Multiple EC2 instances can access the same EFS file system concurrently.
+- Multiple [EC2 instances](./elastic-compute-cloud) can access the same EFS file system concurrently.
 - EFS is commonly used when multiple instances need shared access to the same files.
 - EFS is designed to scale automatically as your file system grows.
 
@@ -46,7 +46,7 @@ EFS offers two file system types.
 
 ### Types
 
-- **Regional**: stores data across multiple Availability Zones within the same Region and is the recommended option for higher availability.
+- **Regional**: stores data across multiple [Availability Zones](./availability-zones) within the same [Region](./regions) and is the recommended option for higher availability.
 - **One Zone**: stores data in a single Availability Zone and is lower cost, but less resilient than Regional.
 
 <Callout variant="note">

@@ -23,7 +23,7 @@ It gives your application **static Anycast IP addresses** that act as fixed entr
 - For IPv4 accelerators, AWS provides **two static IPv4 addresses**
 - For dual-stack accelerators, AWS provides **two IPv4 addresses and two IPv6 addresses**
 - User traffic enters the AWS network at a nearby edge location
-- AWS then routes the traffic to a healthy application endpoint in one or more AWS Regions
+- AWS then routes the traffic to a healthy application endpoint in one or more AWS [Regions](./regions)
 
 <Callout variant="note">
 Global Accelerator does **not** cache content at the edge. It accelerates network routing to your application endpoints.
@@ -73,7 +73,7 @@ For standard accelerators, endpoints can include:
 
 - Application Load Balancers
 - Network Load Balancers
-- EC2 instances
+- [EC2 instances](./elastic-compute-cloud)
 - Elastic IP addresses
 
 Application Load Balancers and Network Load Balancers can be either **internet-facing** or **internal**.
@@ -120,7 +120,7 @@ Global Accelerator helps with DDoS resilience and fixed entry points, but it is 
 
 ## AWS Global Accelerator vs CloudFront
 
-Both services use AWS edge locations and the AWS global network, but they solve different problems.
+Both Global Accelerator and [CloudFront](./cloudfront) use AWS edge locations and the AWS global network, but they solve different problems.
 
 | Feature           | CloudFront                                       | Global Accelerator                                                |
 | ----------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
