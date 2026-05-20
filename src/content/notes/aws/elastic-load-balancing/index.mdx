@@ -1,0 +1,228 @@
+---
+title: ⚖️ Elastic Load Balancing (ELB)
+description: Core notes on AWS Elastic Load Balancing concepts, health checks, sticky sessions, cross-zone load balancing, TLS termination, and load balancer types.
+date: 2026-05-17
+tags:
+  - AWS
+  - ELB
+  - LoadBalancing
+  - Networking
+image: ""
+authors:
+  - geraldkjk
+order: 8
+---
+import Callout from '@/components/callout.astro'
+
+## What is Elastic Load Balancing (ELB)?
+
+Elastic Load Balancing (ELB) is AWS’s managed load balancing service.
+
+It distributes incoming traffic across registered targets such as EC2 instances, containers, IP addresses, Lambda functions, and virtual appliances.
+
+- Provides a single DNS endpoint for clients
+- Helps improve availability across multiple Availability Zones
+- Integrates with many AWS services
+- Supports health checks and automatic traffic distribution
+
+<Callout variant="note">
+Think of ELB as the traffic entry point for your application. It spreads requests across healthy targets instead of sending everything to one server.
+</Callout>
+
+---
+
+## Why use a load balancer?
+
+Load balancers are commonly used to improve availability, scalability, and operational simplicity.
+
+- Spread traffic across multiple downstream targets
+- Expose a single point of access for the application
+- Detect unhealthy targets and stop routing traffic to them
+- Perform regular health checks
+- Support TLS termination for HTTPS traffic
+- Support stickiness when needed
+- Separate public-facing and internal traffic paths
+- Improve high availability across multiple Availability Zones
+
+<Callout variant="important">
+A load balancer improves availability only when you also place healthy targets behind it, ideally across multiple Availability Zones.
+</Callout>
+
+---
+
+## Health checks
+
+Health checks allow the load balancer to determine whether a target is healthy enough to receive traffic.
+
+### Key points
+
+- Health checks are configured using a protocol, port, and sometimes a path
+- For **target-group-based load balancers** such as ALB, NLB, and GWLB, health checks are configured on the **target group**
+- For **Classic Load Balancer**, health checks are configured on the load balancer against registered instances
+- If a target fails health checks, the load balancer stops routing new traffic to it
+
+<Callout variant="important">
+Do not memorise **“anything other than 200 means unhealthy”** as a universal ELB rule. That is true for **Classic Load Balancer HTTP/HTTPS health checks**, but newer target-group-based load balancers support configurable success matchers.
+</Callout>
+
+---
+
+## Sticky sessions
+
+Sticky sessions, also called **session affinity**, send requests from the same client to the same backend target for the duration of the session.
+
+### Key points
+
+- Useful for applications that store temporary session state locally on the backend
+- Can reduce re-authentication or session rehydration overhead
+- Can also create uneven load across targets if overused
+
+### Cookie-based stickiness
+
+For HTTP/HTTPS traffic, cookie-based stickiness is mainly associated with **Classic Load Balancer** and **Application Load Balancer**.
+
+- **Classic Load Balancer**
+  - Supports **duration-based** stickiness
+  - Supports **application-controlled** stickiness
+- **Application Load Balancer**
+  - Supports **load balancer-generated** cookies
+  - Supports **application-based** cookies
+  - Cookie duration is configurable
+
+<Callout variant="warning">
+Stickiness can make traffic distribution less even. Prefer stateless application design where possible, and use stickiness only when the workload truly needs it.
+</Callout>
+
+---
+
+## Cross-zone load balancing
+
+Cross-zone load balancing means that each load balancer node can distribute traffic across healthy targets in **all enabled Availability Zones**, instead of only within its own zone.
+
+### Key points
+
+- Helps distribute traffic more evenly when the number of healthy targets differs across AZs
+- Improves utilisation when one AZ has fewer healthy targets than another
+
+### Defaults by load balancer type
+
+- **Application Load Balancer (ALB)**: enabled by default at the load balancer level
+- **Network Load Balancer (NLB)**: disabled by default
+- **Gateway Load Balancer (GWLB)**: disabled by default
+- **Classic Load Balancer (CLB)**: default depends on how it is created
+
+<Callout variant="note">
+For **Classic Load Balancer**, the default differs by creation method: with the **Console**, cross-zone load balancing is selected by default, while with the **API or CLI**, it is disabled by default.
+</Callout>
+
+---
+
+## TLS / SSL certificates
+
+Load balancers can encrypt traffic between clients and the load balancer.
+
+### Key points
+
+- **TLS** is the modern version of **SSL**
+- Load balancers can terminate TLS so backend targets do not need to handle all encryption work themselves
+- This is often called **SSL/TLS termination** or **TLS offloading**
+
+### SNI support
+
+**Server Name Indication (SNI)** allows multiple TLS certificates to be associated with the same listener, so the load balancer can present the correct certificate for the requested hostname.
+
+- **Classic Load Balancer**: does **not** support SNI
+- **Application Load Balancer**: supports multiple certificates using SNI
+- **Network Load Balancer**: supports multiple certificates using SNI
+
+<Callout variant="important">
+If you need multiple TLS certificates on the same listener, prefer **ALB** or **NLB**. **CLB** does not support SNI.
+</Callout>
+
+---
+
+## Connection draining / deregistration delay
+
+When a target is being removed or marked unhealthy, ELB can stop sending new requests to it while allowing in-flight requests to finish.
+
+### Key points
+
+- **Classic Load Balancer** calls this **connection draining**
+- **ALB / NLB / GWLB** use **deregistration delay**
+- New requests stop being sent to the target while existing requests are allowed time to complete
+- The default is typically **300 seconds**
+
+<Callout variant="note">
+For **Classic Load Balancer**, connection draining can be configured from **1 to 3600 seconds**. For target-group-based load balancers, deregistration delay is configurable and defaults to **300 seconds**.
+</Callout>
+
+---
+
+## Types of load balancers in AWS
+
+### Classic Load Balancer (CLB)
+
+Classic Load Balancer is the **previous generation** of AWS load balancer.
+
+- Supports **HTTP**, **HTTPS**, **TCP**, and **SSL**
+- Mostly relevant for legacy workloads
+- AWS recommends migrating to a current-generation load balancer where possible
+
+### Application Load Balancer (ALB)
+
+Application Load Balancer is designed for **Layer 7** application traffic.
+
+- Supports **HTTP** and **HTTPS** listeners
+- Supports **WebSockets**
+- Supports **HTTP/2** on HTTPS listeners
+- Can route based on:
+  - path
+  - hostname
+  - HTTP headers
+  - query strings
+  - request methods
+- Good fit for microservices and container-based applications
+
+#### Target types
+- EC2 instances
+- IP addresses
+- Lambda functions
+
+### Network Load Balancer (NLB)
+
+Network Load Balancer is designed for high-performance **Layer 4** traffic handling.
+
+- Supports **TCP**, **TLS**, **UDP**, **TCP_UDP**, **QUIC**, and **TCP_QUIC**
+- Provides one static IP address per Availability Zone
+- Supports associating Elastic IP addresses
+- Good fit for very high-throughput or low-latency transport-layer workloads
+
+#### Target types
+- EC2 instances
+- IP addresses
+- Application Load Balancer
+
+### Gateway Load Balancer (GWLB)
+
+Gateway Load Balancer is used to deploy and scale fleets of third-party virtual network appliances.
+
+- Combines:
+  - a **transparent network gateway**
+  - a **load balancer**
+- Used for appliances such as:
+  - firewalls
+  - intrusion detection systems
+  - deep packet inspection systems
+- Uses the **GENEVE** protocol on port **6081**
+
+#### Target types
+- EC2 instances
+- IP addresses
+
+<Callout variant="tip">
+A simple way to remember the types:
+- **CLB**: legacy
+- **ALB**: Layer 7, smart HTTP routing
+- **NLB**: Layer 4, high performance
+- **GWLB**: network appliance insertion
+</Callout>
