@@ -1,12 +1,15 @@
 ---
 import Breadcrumbs from '@/components/breadcrumbs.astro'
+import Link from '@/components/link.astro'
 import PageHead from '@/components/page-head.astro'
 import ProjectCard from '@/components/project-card.astro'
 import { badgeVariants } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
 import PaginationComponent from '@/components/ui/pagination'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/layout.astro'
 import { getAllProjects, groupProjectsByYear } from '@/lib/data-utils'
+import { cn } from '@/lib/utils'
 import type { PaginateFunction } from 'astro'
 import { Icon } from 'astro-icon/components'
 
@@ -51,25 +54,50 @@ const years = Object.keys(projectsByYear).sort((a, b) => {
       <span class={badgeVariants({ variant: 'muted' })}>{projectsCount}</span>
     </div>
     {
-      years.map((year) => (
-        <section class="flex flex-col gap-y-4">
-          <div class="font-medium">{year}</div>
-          <ul class="flex flex-col gap-4">
-            {projectsByYear[year].map((project) => (
-              <li>
-                <ProjectCard project={project} />
-              </li>
-            ))}
-          </ul>
+      projectsCount > 0 ? (
+        years.map((year) => (
+          <section class="flex flex-col gap-y-4">
+            <div class="font-medium">{year}</div>
+            <ul class="flex flex-col gap-4">
+              {projectsByYear[year].map((project) => (
+                <li>
+                  <ProjectCard project={project} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      ) : (
+        <section
+          data-pagefind-ignore
+          class="flex flex-col items-center justify-center gap-y-4 text-center"
+        >
+          <p class="prose max-w-md">No projects yet. Check back soon!</p>
+          <Link
+            href="/"
+            class={cn(
+              buttonVariants({ variant: 'outline' }),
+              'group flex gap-x-1.5',
+            )}
+          >
+            <span class="transition-transform group-hover:-translate-x-1">
+              &larr;
+            </span>
+            Go to home page
+          </Link>
         </section>
-      ))
+      )
     }
   </div>
 
-  <PaginationComponent
-    currentPage={page.currentPage}
-    totalPages={page.lastPage}
-    baseUrl="/projects/"
-    client:load
-  />
+  {
+    projectsCount > 0 && (
+      <PaginationComponent
+        currentPage={page.currentPage}
+        totalPages={page.lastPage}
+        baseUrl="/projects/"
+        client:load
+      />
+    )
+  }
 </Layout>
