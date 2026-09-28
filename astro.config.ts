@@ -44,6 +44,9 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ['motion/react'],
+    },
   },
   server: {
     port: 1234,

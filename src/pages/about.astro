@@ -1,5 +1,6 @@
 ---
 import Breadcrumbs from '@/components/breadcrumbs.astro'
+import GitHubActivity from '@/components/github-activity'
 import Link from '@/components/link.astro'
 import PageHead from '@/components/page-head.astro'
 import { SITE, SOCIAL_LINKS } from '@/consts'
@@ -46,10 +47,6 @@ try {
 } catch {
   githubUsername = ''
 }
-
-const contributionChartUrl = githubUsername
-  ? `https://ghchart.rshah.org/${encodeURIComponent(githubUsername)}`
-  : ''
 
 // Person Schema for About page SEO
 const personSchema = {
@@ -177,32 +174,12 @@ const personSchema = {
       </div>
 
       {
-        contributionChartUrl && (
+        githubUsername && (
           <div class="space-y-4">
             <p class="text-muted-foreground text-sm font-medium tracking-wide uppercase">
               {githubContributionsTitle}
             </p>
-
-            <a
-              href={githubProfileUrl || `https://github.com/${githubUsername}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="bg-card border-border/70 hover:border-accent/50 block rounded-lg border p-4 transition-colors"
-              aria-label={`View ${name}'s GitHub profile`}
-            >
-              <img
-                src={contributionChartUrl}
-                alt={`${name}'s GitHub contribution chart`}
-                loading="lazy"
-                decoding="async"
-                class="w-full"
-              />
-
-              <p class="text-muted-foreground mt-3 inline-flex items-center gap-1.5 text-sm">
-                View full activity on GitHub
-                <Icon name="lucide:external-link" class="size-3.5" />
-              </p>
-            </a>
+            <GitHubActivity client:visible username={githubUsername} />
           </div>
         )
       }
